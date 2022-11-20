@@ -13,7 +13,9 @@ interface IDevice {
   datetime: Date
   friendly_name: string
   heater: string
-  "iot-device": string 
+  "iot-device": string
+  electric_time_to_start: string
+  fuel_time_to_start: string
   uptime: string
 }
 
@@ -76,7 +78,6 @@ export default function Home() {
       <main>
         <div className="flex justify-center">
           {iotDevices.map((d:any,idx:any)=>{
-            console.log(d);
             return <div className='mt-5' key={d["iot-device"]}>
                 <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-72'>
                   <div className='flex justify-center mb-2'>{d.friendly_name}</div>
@@ -91,6 +92,22 @@ export default function Home() {
                   <div className='flex justify-between'>
                     <span>Heater:</span>
                     <span>{d.heater}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Eletric scheduled:</span>
+                    <span>{d.electric_time_to_start}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Fuel scheduled:</span>
+                    <span>{d.fuel_time_to_start}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Electric kWh price:</span>
+                    <span>{d.electric_price}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Fuel kWh price:</span>
+                    <span>{d.fuel_price}</span>
                   </div>
                 </div>
               </div>
