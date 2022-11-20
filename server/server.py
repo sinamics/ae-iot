@@ -24,7 +24,7 @@ CORS(app)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
-broker = '10.0.0.150'
+broker = 'mosquitto'
 port = 1883
 
 # generate client ID with pub prefix randomly

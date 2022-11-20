@@ -48,7 +48,7 @@ services:
     networks:
       - iot
     ports:
-      - 80
+      - 80:80
     restart: unless-stopped
     environment:
       - TZ=Europe/Oslo
@@ -78,7 +78,7 @@ services:
     volumes:
       - ./storage/mosquitto:/mosquitto
       - /etc/localtime:/etc/localtime:ro
-      
+
     ports:
       - 1883:1883
       - 9001:9001
