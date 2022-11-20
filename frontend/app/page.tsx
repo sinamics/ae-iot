@@ -82,6 +82,10 @@ export default function Home() {
                 <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
                   <div className='flex justify-center mb-2'>{d.friendly_name}</div>
                   <div className='flex justify-between'>
+                    <span>System:</span>
+                    <span>{d.system}</span>
+                  </div>
+                  <div className='flex justify-between'>
                     <span>Lastseen:</span>
                     <span><ReactTimeAgo date={new Date(d.datetime)} locale="en-US" /></span>
                   </div>

@@ -76,11 +76,11 @@ services:
     networks:
       - iot
     volumes:
-      - ./storage/mosquitto:/mosquitto
+      - ./storage/mosquitto:/mosquitto:rw
       - /etc/localtime:/etc/localtime:ro
 
     ports:
-      - 1883:1883
+      - 8884:8884
       - 9001:9001
 
 volumes:

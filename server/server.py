@@ -24,12 +24,16 @@ CORS(app)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
-broker = 'mosquitto'
-port = 1883
+broker = 'mqtt.kodea.no'
+port = 8884
 
 # generate client ID with pub prefix randomly
 client_id = f'mqtt-controller'
 clients = ["iot/device/iot-device-100"]
+
+cafile="certs/ca.crt"
+keyfile="certs/client.key"
+certfile="certs/client.crt"
 
 class Mqtt:
     def __init__(self) -> None:
@@ -44,8 +48,7 @@ class Mqtt:
                 print("Failed to connect, return code %d\n", rc)
 
         client = mqtt_client.Client(client_id)
-        
-        # client.username_pw_set(username, password)
+        client.tls_set(ca_certs=cafile, certfile=certfile, keyfile=keyfile, cert_reqs=True)
         client.on_connect = on_connect
         client.connect(broker, port)
         return client
