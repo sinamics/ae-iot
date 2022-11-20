@@ -1,0 +1,101 @@
+"use client"
+
+import { useCallback, useEffect, useState } from 'react';
+import styles from './page.module.css'
+import io from 'socket.io-client';
+import { useQuery } from '@tanstack/react-query';
+import ReactTimeAgo from 'react-time-ago'
+
+const socket = io("https://iotsrv1.egeland.io");
+
+const iot:any = [{}]
+interface IDevice {
+  datetime: Date
+  friendly_name: string
+  heater: string
+  "iot-device": string 
+  uptime: string
+}
+
+const iots:any = []
+
+const fetchData = async () =>{
+  const response = await fetch("https://iotsrv1.egeland.io/devices")
+  return response.json()
+}
+
+export default function Home() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [lastPong, setLastPong] = useState("");
+  const [iotDevices, setIotDevices] = useState<any>([]);
+
+  const { isLoading, isError, data, error } = useQuery({ queryKey: ['devices'], queryFn: fetchData })
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socket.on('iot-ping', (devices) => {
+      const msg: IDevice = JSON.parse(devices)
+      console.log(iotDevices);
+      const dev =  [...iotDevices]
+
+      // check if device exsist in list 
+      const index = iotDevices.findIndex((f:any) => f["iot-device"] === msg["iot-device"])
+
+      // update or add
+      if(index !== -1) {
+        dev[index] = msg
+        return setIotDevices(dev)
+      }
+
+      setIotDevices((prev:any) => [...prev, {...msg}])
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('iot-ping');
+    };
+  }, [iotDevices]);
+
+  useEffect(()=>{
+    if(!data?.length) return
+    setIotDevices(data)
+  },[data])
+  
+
+  if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
+
+  return (
+      <main>
+        <div className="flex justify-center">
+          {iotDevices.map((d:any,idx:any)=>{
+            console.log(d);
+            return <div className='mt-5' key={d["iot-device"]}>
+                <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-72'>
+                  <div className='flex justify-center mb-2'>{d.friendly_name}</div>
+                  <div className='flex justify-between'>
+                    <span>Lastseen:</span>
+                    <span><ReactTimeAgo date={new Date(d.datetime)} locale="en-US" /></span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Uptime:</span>
+                    <span>{d.uptime}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Heater:</span>
+                    <span>{d.heater}</span>
+                  </div>
+                </div>
+              </div>
+          })}
+        </div>
+      </main>
+  )
+}

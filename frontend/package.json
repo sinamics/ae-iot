@@ -1,0 +1,33 @@
+{
+  "name": "iot-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.16.1",
+    "@types/node": "18.11.9",
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.9",
+    "bufferutil": "^4.0.7",
+    "eslint": "8.27.0",
+    "eslint-config-next": "13.0.4",
+    "javascript-time-ago": "^2.5.9",
+    "next": "13.0.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-time-ago": "^7.2.1",
+    "socket.io-client": "^4.5.3",
+    "typescript": "4.9.3",
+    "utf-8-validate": "^5.0.10"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3.2.4"
+  }
+}

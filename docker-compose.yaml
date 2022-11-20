@@ -1,0 +1,91 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  frontend:
+    image: sinamics/ae-iot-frontend
+    container_name: frontend
+    networks:
+      - iot
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Oslo
+
+    volumes:
+      - /home/serveradmin/deluge/config:/config
+      - /home/serveradmin/deluge/download:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    ports:
+     - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    image: sinamics/ae-iot-backend
+    container_name: backend
+    networks:
+      - iot
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Oslo
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+    #   - ./storage/backend/:/app
+    restart: unless-stopped
+    ports:
+     - "5000:5000"
+    depends_on:
+      - redis
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    networks:
+      - iot
+    ports:
+      - 80
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Oslo
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - iot
+    expose:
+      - 6379
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Oslo
+    volumes:
+      - ./storage/redis/:/data
+      - /etc/localtime:/etc/localtime:ro
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    networks:
+      - iot
+    volumes:
+      - ./storage/mosquitto:/mosquitto
+      - /etc/localtime:/etc/localtime:ro
+      
+    ports:
+      - 1883:1883
+      - 9001:9001
+
+volumes:
+  iot-data:
+
+networks:
+  iot:
+    driver: bridge

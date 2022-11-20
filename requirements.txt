@@ -1,0 +1,8 @@
+flask-socketio
+WSGIserver
+gevent
+gevent-websocket
+flask_cors
+paho-mqtt
+redis
+eventlet
