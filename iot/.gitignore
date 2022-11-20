@@ -1,0 +1,4 @@
+todays_prices.json
+*.log
+__pycache__
+src/certs
