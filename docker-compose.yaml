@@ -76,7 +76,10 @@ services:
     networks:
       - iot
     volumes:
-      - ./storage/mosquitto:/mosquitto:rw
+      - ./storage/mosquitto/certs:/mosquitto/certs:ro
+      - ./storage/mosquitto/config:/mosquitto/config
+      - ./storage/mosquitto/data:/mosquitto/data
+      - ./storage/mosquitto/log:/mosquitto/log
       - /etc/localtime:/etc/localtime:ro
 
     ports:

@@ -6,3 +6,4 @@ flask_cors
 paho-mqtt
 redis
 eventlet
+python-dotenv

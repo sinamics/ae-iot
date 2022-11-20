@@ -9,17 +9,20 @@ import eventlet.wsgi
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from werkzeug.debug import DebuggedApplication
-
+from dotenv import load_dotenv
 from paho.mqtt import client as mqtt_client # type: ignore
 import json
 import redis
+import os.path
+
+load_dotenv()
 
 r = redis.Redis(host='redis', port=6379, db=0)
 x = datetime.datetime.now()
 
 # Initializing flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
+app.config['SECRET_KEY'] = os.getenv('SERVER_SECRET')
 CORS(app)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
