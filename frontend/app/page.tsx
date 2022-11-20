@@ -79,7 +79,7 @@ export default function Home() {
         <div className="flex justify-center">
           {iotDevices.map((d:any,idx:any)=>{
             return <div className='mt-5' key={d["iot-device"]}>
-                <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-72'>
+                <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
                   <div className='flex justify-center mb-2'>{d.friendly_name}</div>
                   <div className='flex justify-between'>
                     <span>Lastseen:</span>
@@ -94,7 +94,7 @@ export default function Home() {
                     <span>{d.heater}</span>
                   </div>
                   <div className='flex justify-between'>
-                    <span>Eletric scheduled:</span>
+                    <span>Electric scheduled:</span>
                     <span>{d.electric_time_to_start}</span>
                   </div>
                   <div className='flex justify-between'>
