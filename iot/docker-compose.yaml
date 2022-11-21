@@ -1,0 +1,16 @@
+version: '3'
+services:
+  aeiot:
+    image: sinamics/ae-iot
+    privileged: true
+    hostname: docker-iot-100
+    container_name: aeiot
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - /etc/localtime:/etc/localtime:ro
+    volumes:
+      - /home/pi/data/config.yaml:/app/config.yaml:ro
+    restart: unless-stopped
+    devices:
+      - /dev/mem:/dev/mem

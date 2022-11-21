@@ -92,3 +92,4 @@ else:
 
 # pprint(pub_message)
 mqtt.publish(json.dumps(pub_message, indent=4, sort_keys=True, default=str))
+sys.exit(0)
