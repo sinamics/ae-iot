@@ -55,7 +55,7 @@ def date_formatter(date):
     if now-timedelta(hours=24) <= date <= now:
         return "Now"
 
-    return str(now - date).split(".")[0]
+    return str(date - now).split(".")[0]
 
 # sys.exit()
 # create dict
