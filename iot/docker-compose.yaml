@@ -11,6 +11,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     volumes:
       - /home/pi/data/config.yaml:/app/config.yaml:ro
+      - /home/pi/data/certs:/app/certs:ro
     restart: unless-stopped
     devices:
       - /dev/mem:/dev/mem
