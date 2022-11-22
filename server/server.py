@@ -1,6 +1,6 @@
 # Import flask and datetime module for showing date and time
 from __future__ import print_function # In python 2.7
-from flask import Flask, render_template
+from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, send
 from flask_cors import CORS
 import datetime
@@ -17,13 +17,13 @@ import os.path
 
 load_dotenv()
 
-r = redis.Redis(host='redis', port=6379, db=0)
+r = redis.Redis(host='localhost', port=6379, db=0)
 x = datetime.datetime.now()
 
 # Initializing flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SERVER_SECRET')
-CORS(app)
+
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -92,7 +92,15 @@ class Mqtt:
 mq = Mqtt()
 
 
-
+# Route for seeing a data
+@app.route('/action', methods=["POST"])
+def action():
+    data = request.get_json()
+    # Returning an api for showing in  reactjs
+    # redis_devices = r.keys("iot-device*")
+    print(data)
+    return jsonify('OK'),200
+    
 # Route for seeing a data
 @app.route('/devices')
 def devices():
@@ -129,7 +137,7 @@ def run_server():
         application = DebuggedApplication(app)
     else:
         application = app
-
+    CORS(app)
     # http_server = WSGIServer(('',5000), application, handler_class=WebSocketHandler)
     # http_server.serve_forever()
     eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), application)

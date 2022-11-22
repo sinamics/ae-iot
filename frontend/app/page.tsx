@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import styles from './page.module.css'
 import io from 'socket.io-client';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import ReactTimeAgo from 'react-time-ago'
+import { Dropdown } from '../components/dropdown';
 
-const socket = io("https://iotsrv1.egeland.io");
+const SERVER_URL="http://10.0.0.150:5000"
+// const SERVER_URL="https://iotsrv1.egeland.io"
+
+const socket = io(SERVER_URL);
 
 const iot:any = [{}]
 interface IDevice {
@@ -22,16 +26,32 @@ interface IDevice {
 const iots:any = []
 
 const fetchData = async () =>{
-  const response = await fetch("https://iotsrv1.egeland.io/devices")
+  const response = await fetch(`${SERVER_URL}/devices`)
   return response.json()
 }
 
+const postData = async (data:any) => {
+  const response = await fetch(`${SERVER_URL}/action`,
+    { 
+      method: 'POST',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(data)
+    })
+    return response.json()
+
+}
 export default function Home() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState("");
   const [iotDevices, setIotDevices] = useState<any>([]);
 
   const { isLoading, isError, data, error } = useQuery({ queryKey: ['devices'], queryFn: fetchData })
+  const { mutate } = useMutation(postData)
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -44,7 +64,6 @@ export default function Home() {
 
     socket.on('iot-ping', (devices) => {
       const msg: IDevice = JSON.parse(devices)
-      console.log(iotDevices);
       const dev =  [...iotDevices]
 
       // check if device exsist in list 
@@ -66,12 +85,17 @@ export default function Home() {
     };
   }, [iotDevices]);
 
+  const actionHandler:any = (e:any) =>{
+    console.log(e);
+    mutate(e)
+  }
+  
   useEffect(()=>{
     if(!data?.length) return
     setIotDevices(data)
   },[data])
   
-
+  console.log(data)
   if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
 
   return (
@@ -80,7 +104,18 @@ export default function Home() {
           {iotDevices.map((d:any,idx:any)=>{
             return <div className='mt-5' key={d["iot-device"]}>
                 <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
-                  <div className='flex justify-center mb-2'>{d.friendly_name}</div>
+                  <div className='flex justify-center mb-2'>
+                    <Dropdown onSelect={actionHandler} />
+                    {d.friendly_name}
+                    </div>
+                  <div className='flex justify-between'>
+                    <span>System:</span>
+                    <span>{d.system}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Operational Mode:</span>
+                    <span>{d.operational_mode}</span>
+                  </div>
                   <div className='flex justify-between'>
                     <span>System:</span>
                     <span>{d.system}</span>
