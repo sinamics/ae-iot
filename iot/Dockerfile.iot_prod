@@ -2,7 +2,7 @@
 
 FROM --platform=$TARGETPLATFORM python:3.10-slim-buster
 
-WORKDIR /app
+WORKDIR /ae-iot/iot
 ENV TZ=Europe/Oslo
 
 COPY install/requirements.txt requirements.txt
@@ -16,16 +16,19 @@ RUN apt-get install -y \
 
 
 RUN pip3 install -r requirements.txt
-COPY ./src .
-COPY ./config.yaml .
-COPY ./install ./install
-COPY ./install/install.sh .
-COPY ./install/entrypoint.sh .
+
+COPY . .
+
+# COPY ./src .
+# COPY ./config.yaml .
+# COPY ./install ./install
+# COPY ./install/install.sh .
+# COPY ./install/entrypoint.sh .
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN ./install.sh
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "/ae-iot/iot/install/entrypoint.sh" ]
 CMD [ "cron", "&&", "tail", "-f", "/var/log/cron.log"]
 
 # MULTIARCH BUILD #
