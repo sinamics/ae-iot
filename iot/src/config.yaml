@@ -1,0 +1,7 @@
+client_id: iot-device-100
+friendly_name: "egeland device #1"
+data_nested_path: areas_Kr.sand_values # Do not change!
+nordpool_region: Kr.sand # https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/NO/Weekly/?view=table
+fuel_kwh_price: 270 # Øre pr kwh
+fuel_gpio_output_pin: 38 # (GPIO20) High when fuel kwh price is less than electric kwh price
+electric_gpio_output_pin: 40 # (GPIO21)

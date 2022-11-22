@@ -47,7 +47,7 @@ class HeatController(object):
         return True
 
     def read_config(self):
-        with open(os.path.expanduser('/app/config.yaml'), "r") as yamlfile:
+        with open(os.path.expanduser('config.yaml'), "r") as yamlfile:
             return yaml.load(yamlfile, Loader=yaml.FullLoader)
 
     def fetch_prices(self, *args):
@@ -55,7 +55,7 @@ class HeatController(object):
         spot_price = nordpool.Prices("NOK").hourly(areas=[self.config["nordpool_region"]],end_date=date.today())
         
         try:
-            with open(os.path.expanduser('/app/todays_prices.json'), "w") as outfile:
+            with open(os.path.expanduser('todays_prices.json'), "w") as outfile:
                 outfile.write(json.dumps(spot_price, indent=4, sort_keys=True, default=str))
             return True
         except KeyError:
@@ -63,11 +63,11 @@ class HeatController(object):
         
     def load_pricefile(self, *args):
         # check if file exist and if not, fetch new prices. ( probably first run )
-        if not exists(os.path.expanduser('/app/todays_prices.json')):
+        if not exists(os.path.expanduser('todays_prices.json')):
             self.fetch_prices()
 
         # Load file with todays prices
-        with open(os.path.expanduser('/app/todays_prices.json'), 'r') as openfile:   
+        with open(os.path.expanduser('todays_prices.json'), 'r') as openfile:   
             # Reading from json file
             return json.load(openfile)
 

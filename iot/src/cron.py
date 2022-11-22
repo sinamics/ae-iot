@@ -8,6 +8,7 @@ import psutil
 import time
 import sys
 import pytz
+import redis
 
 mqtt = MqttPublish()
 
@@ -16,10 +17,12 @@ mqtt = MqttPublish()
 #
 # instantiate new class
 HeatCtl = HeatController()
-
 # read yaml config file
 config = HeatCtl.read_config()
 
+r = redis.Redis(host='redis', port=6379, db=0)
+redis_db = r.get("{}/config".format(HeatCtl.read_config()["client_id"]))
+# print(redis_db)
 # gpio setup
 GPIO.setmode(GPIO.BOARD) # use board pin number and not BCM chip numbers
 GPIO.setwarnings(False)
@@ -57,6 +60,14 @@ def date_formatter(date):
 
     return str(date - now).split(".")[0]
 
+
+def redis_config():
+    if redis_db and "operational_status" in json.dumps(redis_db):
+        return json.dumps(redis_db)
+        
+    return None
+
+
 # sys.exit()
 # create dict
 pub_message = dict({
@@ -69,8 +80,10 @@ pub_message = dict({
     "fuel_time_to_start": date_formatter(forcast["fuel_time_to_start"]),
     "fuel_price": config["fuel_kwh_price"],
     "electric_price": spot_kwh_price,
-    "uptime": str(timedelta(seconds=time.time() - psutil.boot_time())).split(".")[0]
+    "uptime": str(timedelta(seconds=time.time() - psutil.boot_time())).split(".")[0],
+    "operational_status": redis_config()["operational_status"]
 })
+
 
 if spot_kwh_price < config["fuel_kwh_price"]:
     print("Prioritizes electric heating")
@@ -89,6 +102,7 @@ else:
     GPIO.output(config["fuel_gpio_output_pin"], GPIO.HIGH)
 
     pub_message["heater"] = "fuel"
+
 
 # pprint(pub_message)
 mqtt.publish(json.dumps(pub_message, indent=4, sort_keys=True, default=str))
