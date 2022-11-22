@@ -23,7 +23,7 @@ export default function RootLayout({
       */}
       <head />
       <body>
-        <header className='text-6xl flex justify-center pt-40'>
+        <header className='text-3xl sm:text-4xl lg:text-6xl flex justify-center pt-40'>
           <h1>Søhagen IoT Dashboard</h1>
         </header>
         <QueryClientProvider client={queryClient}>
