@@ -20,7 +20,7 @@ HeatCtl = HeatController()
 # read yaml config file
 config = HeatCtl.read_config()
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host='redis', port=6379, db=0)
 redis_db = r.get("{}/config".format(HeatCtl.read_config()["client_id"]))
 
 # gpio setup
@@ -91,6 +91,9 @@ pub_message = dict({
 })
 
 if _redis_db["operational_mode"] == "stopp":
+    pub_message["heater"] = "stopped"
+    pub_message["electric_time_to_start"] = "stopped"
+    pub_message["fuel_time_to_start"] = "stopped"
     publish_message(pub_message)
 
 if spot_kwh_price < config["fuel_kwh_price"] and (_redis_db["operational_mode"] == "electric" or _redis_db["operational_mode"] == "auto"):
