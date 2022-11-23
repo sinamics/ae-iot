@@ -98,6 +98,7 @@ def action():
     data = request.get_json()
     # Returning an api for showing in  reactjs
     # redis_devices = r.keys("iot-device*")
+    mq.publish("iot/subscribe/iot-device-100", json.dumps({"operational_mode": data}))
     print(data)
     return jsonify('OK'),200
     
