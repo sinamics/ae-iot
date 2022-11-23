@@ -17,7 +17,7 @@ import os.path
 
 load_dotenv()
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host='redis', port=6379, db=0)
 x = datetime.datetime.now()
 
 # Initializing flask app
