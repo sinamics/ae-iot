@@ -100,7 +100,7 @@ if _redis_db["operational_mode"] == "stopp":
 
     publish_message(pub_message)
 
-if spot_kwh_price < config["fuel_kwh_price"] and (_redis_db["operational_mode"] == "electric" or _redis_db["operational_mode"] == "auto"):
+if (spot_kwh_price < config["fuel_kwh_price"] and _redis_db["operational_mode"] == "auto") or _redis_db["operational_mode"] == "electric":
     print("Prioritizes electric heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.HIGH)
@@ -111,7 +111,7 @@ if spot_kwh_price < config["fuel_kwh_price"] and (_redis_db["operational_mode"] 
     pub_message["heater"] = "electric"
     publish_message(pub_message)
 
-if spot_kwh_price >= config["fuel_kwh_price"] and (_redis_db["operational_mode"] == "fuel" or _redis_db["operational_mode"] == "auto"):
+if (spot_kwh_price >= config["fuel_kwh_price"] and _redis_db["operational_mode"] == "auto") or _redis_db["operational_mode"] == "fuel":
     print("Prioritizes fuel heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)

@@ -28,7 +28,6 @@ class MqttSubscribe(mqtt.Client):
         r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
         os.system('python3 /ae-iot/iot/src/cron.py')
 
-
     def on_publish(self, mqttc, obj, mid):
         print("mid: "+str(mid))
 
