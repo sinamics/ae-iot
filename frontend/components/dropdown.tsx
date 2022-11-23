@@ -11,7 +11,7 @@ export function Dropdown({onSelect, clientId}:any) {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target  >
-        <ActionIcon variant="light"><IconSettings size={16} /></ActionIcon>
+        <ActionIcon variant="light"><IconSettings size={21} /></ActionIcon>
       </Menu.Target>
 
       <Menu.Dropdown onClick={handler}>

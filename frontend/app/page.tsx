@@ -10,7 +10,7 @@ import { Dropdown } from '../components/dropdown';
 // const SERVER_URL="http://10.0.0.150:5000"
 const SERVER_URL="https://iotsrv1.egeland.io"
 
-const socket = io(SERVER_URL);
+const socket = io(SERVER_URL, {transports: ["websocket"]});
 
 const iot:any = [{}]
 interface IDevice {
@@ -23,10 +23,8 @@ interface IDevice {
   uptime: string
 }
 
-const iots:any = []
-
 const fetchData = async () =>{
-  const response = await fetch(`${SERVER_URL}/devices`)
+  const response = await fetch(`${SERVER_URL}/devices`, {cache: 'no-cache'})
   return response.json()
 }
 
@@ -50,11 +48,12 @@ export default function Home() {
   const [lastPong, setLastPong] = useState("");
   const [iotDevices, setIotDevices] = useState<any>([]);
 
-  const { isLoading, isError, data, error } = useQuery({ queryKey: ['devices'], queryFn: fetchData })
-  const { mutate } = useMutation(postData)
+  const { isLoading, isError, data, error, refetch } = useQuery({ queryKey: ['devices'], queryFn: fetchData })
+  const { mutate } = useMutation(postData, { networkMode:"always"})
 
   useEffect(() => {
     socket.on('connect', () => {
+      console.log('websocket connected')
       setIsConnected(true);
     });
 
@@ -62,26 +61,30 @@ export default function Home() {
       setIsConnected(false);
     });
 
-    socket.on('iot-ping', (devices) => {
+    socket.on('iotping', (devices) => {
+      console.log("new message", devices)
+  
       const msg: IDevice = JSON.parse(devices)
       const dev =  [...iotDevices]
 
       // check if device exsist in list 
       const index = iotDevices.findIndex((f:any) => f["iot-device"] === msg["iot-device"])
-
       // update or add
       if(index !== -1) {
         dev[index] = msg
         return setIotDevices(dev)
       }
 
-      setIotDevices((prev:any) => [...prev, {...msg}])
+      setIotDevices((prev:any) => {
+        console.log(prev)
+        return [...prev, {...msg}]
+      })
     });
 
     return () => {
       socket.off('connect');
       socket.off('disconnect');
-      socket.off('iot-ping');
+      socket.off('iotping');
     };
   }, [iotDevices]);
 
@@ -93,22 +96,24 @@ export default function Home() {
     if(!data?.length) return
     setIotDevices(data)
   },[data])
-  
+
   if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
+  // console.log(data)
 
   return (
       <main>
         <div className="flex justify-center">
           {iotDevices.map((d:any,idx:any)=>{
             return <div className='mt-5' key={d["iot-device"]}>
-                <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
+                <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative'>
+                 
+                  <span className='absolute right-2 top-2'><Dropdown onSelect={actionHandler} clientId={d["iot-device"]} /></span>
                   <div className='flex justify-center mb-2'>
                     {d.friendly_name}
-                    <Dropdown onSelect={actionHandler} clientId={d["iot-device"]} />
-                    </div>
+                  </div>
                   <div className='flex justify-between'>
-                    <span>System:</span>
-                    <span>{d.system}</span>
+                    <span>Client id:</span>
+                    <span>{d["iot-device"]}</span>
                   </div>
                   <div className='flex justify-between'>
                     <span>Operational Mode:</span>

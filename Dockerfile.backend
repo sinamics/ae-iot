@@ -11,3 +11,5 @@ COPY ./server .
 EXPOSE 5000
 
 CMD [ "python3", "server.py"]
+
+# sudo docker build -t sinamics/ae-iot-backend -f Dockerfile.backend .

@@ -1,10 +1,12 @@
 # Import flask and datetime module for showing date and time
 from __future__ import print_function # In python 2.7
 from flask import Flask, request, jsonify
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 from flask_cors import CORS
 import datetime
 import eventlet
+eventlet.monkey_patch()
+
 import eventlet.wsgi
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
@@ -15,6 +17,7 @@ import json
 import redis
 import os.path
 
+
 load_dotenv()
 
 r = redis.Redis(host='redis', port=6379, db=0)
@@ -23,9 +26,8 @@ x = datetime.datetime.now()
 # Initializing flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SERVER_SECRET')
-
-
-socketio = SocketIO(app, cors_allowed_origins='*')
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins='*',async_mode='eventlet')
 
 broker = 'mqtt.kodea.no'
 port = 8884
@@ -38,7 +40,7 @@ cafile="certs/ca.crt"
 keyfile="certs/client.key"
 certfile="certs/client.crt"
 
-class Mqtt:
+class Mqtt():
     def __init__(self) -> None:
         pass
 
@@ -71,14 +73,15 @@ class Mqtt:
     def on_message(self, client, userdata, message): 
         # The callback for when a PUBLISH message is received from the server. print("Message received-> " 
         msg = json.loads(message.payload.decode("utf-8"))
-
+        # print(str(message.payload.decode("utf-8")))
         if not "iot-device" in msg:
             return
-
+        
+        socketio.emit('iotping', message.payload.decode("utf-8"))
+        print("messages will be sent by socketio")
         r.set(msg["iot-device"], message.payload.decode("utf-8"))
-        socketio.emit('iot-ping', message.payload.decode("utf-8"))
         # get_iot_devices(message.payload.decode("utf-8"))
-        print(str(message.payload.decode("utf-8")))
+        
 
     def run(self):
         self.client = self.connect_mqtt()
@@ -90,7 +93,7 @@ class Mqtt:
         self.client.loop_start()
 
 mq = Mqtt()
-
+mq.run()
 
 # Route for seeing a data
 @app.route('/action', methods=["POST"])
@@ -110,7 +113,7 @@ def action():
 def devices():
     # Returning an api for showing in  reactjs
     # redis_devices = r.keys("iot-device*")
-
+    # r.delete("iot-device-100")
     devices_arr = []
     for device in r.scan_iter(match='iot-device*'):
         node = r.get(device)
@@ -127,21 +130,21 @@ def test_connect():
     # emit('responseMessage', {'data': 'Connected! ayy'})
     # need visibility of the global thread object
 
-@socketio.on('devices')
-def handle_message(message):
-    send(message)
+# @socketio.on('devices')
+# def handle_message(message):
+#     send(message)
 
 # Running app
 # @run_with_reloader
 def run_server():
-    mq.run()
+    
 
     app.debug = True
     if app.debug:
         application = DebuggedApplication(app)
     else:
         application = app
-    CORS(app)
+    # socketio.run(app, host="0.0.0.0", port=5000, debug=True)
     # http_server = WSGIServer(('',5000), application, handler_class=WebSocketHandler)
     # http_server.serve_forever()
     eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), application)

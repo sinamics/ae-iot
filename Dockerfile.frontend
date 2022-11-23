@@ -32,3 +32,5 @@ COPY --from=builder /opt/app/node_modules ./node_modules
 EXPOSE 3000
 
 CMD ["node_modules/.bin/next", "start"]
+
+# sudo docker build -t sinamics/ae-iot-frontend -f Dockerfile.frontend .
