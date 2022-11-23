@@ -8,7 +8,7 @@ echo "adding crontab job"
 touch /etc/cron.d/iot
 touch /var/log/cron.log
 
-echo "*/5 * * * * $USER /usr/local/bin/python3 /app/cron.py >> /var/log/cron.log 2>&1 " >> /etc/cron.d/iot
+echo "*/5 * * * * $USER /usr/local/bin/python3 /ae-iot/iot/src/cron.py >> /var/log/cron.log 2>&1 " >> /etc/cron.d/iot
 
 # grep "python3 /opt/rpi-heater-logic/src/operation.py" /etc/crontab || echo "1 * * * * $USER python3 /opt/rpi-heater-logic/src/operation.py 2>&1 >> /opt/rpi-heater-logic/log/operation.log" >> /etc/crontab
 # fetching data

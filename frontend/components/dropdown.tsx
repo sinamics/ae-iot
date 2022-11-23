@@ -2,10 +2,10 @@ import { Menu, ActionIcon, Text } from '@mantine/core';
 import { IconSearch, IconPhoto, IconMessageCircle, IconTrash, IconArrowsLeftRight, IconSettings  } from '@tabler/icons';
 import { useRef, useState } from 'react';
 
-export function Dropdown({onSelect}:any) {
+export function Dropdown({onSelect, clientId}:any) {
     const handler = (e:any)=>{
-        const value = e.target.innerHTML.toLowerCase()
-        onSelect(value)
+        const operational_mode = e.target.innerHTML.toLowerCase()
+        onSelect({operational_mode, clientId})
     }
 
   return (

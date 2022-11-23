@@ -85,9 +85,8 @@ export default function Home() {
     };
   }, [iotDevices]);
 
-  const actionHandler:any = (e:any) =>{
-    console.log(e);
-    mutate(e)
+  const actionHandler:any = (props:any) =>{
+    mutate({...props})
   }
   
   useEffect(()=>{
@@ -96,7 +95,7 @@ export default function Home() {
   },[data])
   
   if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
-
+  console.log(data)
   return (
       <main>
         <div className="flex justify-center">
@@ -105,7 +104,7 @@ export default function Home() {
                 <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
                   <div className='flex justify-center mb-2'>
                     {d.friendly_name}
-                    <Dropdown onSelect={actionHandler} />
+                    <Dropdown onSelect={actionHandler} clientId={d["iot-device"]} />
                     </div>
                   <div className='flex justify-between'>
                     <span>System:</span>

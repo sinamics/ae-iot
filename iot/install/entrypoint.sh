@@ -5,7 +5,7 @@ set -m
 
 # run operation once
 echo "First Run" > /var/log/cron.log
-/usr/local/bin/python3 /app/cron.py >> /var/log/cron.log
+/usr/local/bin/python3 /ae-iot/iot/cron.py >> /var/log/cron.log
 
 #execute CMD
 exec "$@"

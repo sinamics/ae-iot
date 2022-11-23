@@ -17,7 +17,7 @@ import os.path
 
 load_dotenv()
 
-r = redis.Redis(host='redis', port=6379, db=0)
+r = redis.Redis(host='localhost', port=6379, db=0)
 x = datetime.datetime.now()
 
 # Initializing flask app
@@ -98,7 +98,7 @@ def action():
     data = request.get_json()
     # Returning an api for showing in  reactjs
     # redis_devices = r.keys("iot-device*")
-    mq.publish("iot/subscribe/iot-device-100", json.dumps({"operational_mode": data}))
+    mq.publish("iot/subscribe/iot-device-100", json.dumps(data))
     print(data)
     return jsonify('OK'),200
     
