@@ -20,7 +20,7 @@ HeatCtl = HeatController()
 # read yaml config file
 config = HeatCtl.read_config()
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host='redis', port=6379, db=0)
 redis_db = r.get("{}/config".format(HeatCtl.read_config()["client_id"]))
 
 # gpio setup
