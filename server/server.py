@@ -17,7 +17,7 @@ import os.path
 
 load_dotenv()
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host='redis', port=6379, db=0)
 x = datetime.datetime.now()
 
 # Initializing flask app
@@ -96,10 +96,13 @@ mq = Mqtt()
 @app.route('/action', methods=["POST"])
 def action():
     data = request.get_json()
+
+    if not data["clientId"]:
+        return jsonify('No clientId'),500
+
     # Returning an api for showing in  reactjs
-    # redis_devices = r.keys("iot-device*")
-    mq.publish("iot/subscribe/iot-device-100", json.dumps(data))
-    print(data)
+    mq.publish("iot/subscribe/{}".format(data["clientId"]), json.dumps(data))
+    print(data["clientId"])
     return jsonify('OK'),200
     
 # Route for seeing a data

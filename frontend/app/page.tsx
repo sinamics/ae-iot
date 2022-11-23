@@ -95,7 +95,7 @@ export default function Home() {
   },[data])
   
   if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
-  console.log(data)
+
   return (
       <main>
         <div className="flex justify-center">
@@ -113,10 +113,6 @@ export default function Home() {
                   <div className='flex justify-between'>
                     <span>Operational Mode:</span>
                     <span>{d.operational_mode}</span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>System:</span>
-                    <span>{d.system}</span>
                   </div>
                   <div className='flex justify-between'>
                     <span>Lastseen:</span>

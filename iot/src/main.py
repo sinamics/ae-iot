@@ -47,7 +47,7 @@ class HeatController(object):
         return True
 
     def read_config(self):
-        with open(os.path.expanduser('config.yaml'), "r") as yamlfile:
+        with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
             return yaml.load(yamlfile, Loader=yaml.FullLoader)
 
     def fetch_prices(self, *args):

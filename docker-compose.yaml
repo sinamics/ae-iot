@@ -34,6 +34,7 @@ services:
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./server/certs:/app/certs:ro
 
     #   - ./storage/backend/:/app
     restart: unless-stopped

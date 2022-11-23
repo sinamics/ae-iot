@@ -26,7 +26,7 @@ class MqttSubscribe(mqtt.Client):
     def on_message(self, mqttc, obj, msg):
         print(msg.payload.decode("utf-8"))
         r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
-        os.system('python3 cron.py')
+        os.system('python3 /ae-iot/iot/src/cron.py')
 
 
     def on_publish(self, mqttc, obj, mid):
@@ -55,7 +55,7 @@ class MqttSubscribe(mqtt.Client):
 # mqttc = MyMQTTClass("client-id")
 # but note that the client id must be unique on the broker. Leaving the client
 # id parameter empty will generate a random id for you.
-mqttc = MqttSubscribe("iot-device-100-subscribe")
+mqttc = MqttSubscribe("{}-subscribe".format(HeatCtl.read_config()["client_id"]))
 rc = mqttc.run()
 
 print("rc: "+str(rc))
