@@ -16,7 +16,7 @@ certfile=os.path.join(dirname, 'certs/client.crt')
 
 HeatCtl = HeatController()
 
-r = redis.Redis(host='redis', port=6379, db=0)
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 class MqttSubscribe(mqtt.Client):
 
@@ -24,7 +24,6 @@ class MqttSubscribe(mqtt.Client):
         print("rc: "+str(rc))
 
     def on_message(self, mqttc, obj, msg):
-        print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
         print(msg.payload.decode("utf-8"))
         r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
         os.system('python3 cron.py')
