@@ -5,6 +5,7 @@
 from paho.mqtt import client as mqtt # type: ignore
 from main import HeatController
 import os.path
+import os
 import redis
 
 dirname = os.path.dirname(__file__)
@@ -24,8 +25,10 @@ class MqttSubscribe(mqtt.Client):
 
     def on_message(self, mqttc, obj, msg):
         print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
-        
-        r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload)
+        print(msg.payload.decode("utf-8"))
+        r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
+        os.system('python3 cron.py')
+
 
     def on_publish(self, mqttc, obj, mid):
         print("mid: "+str(mid))

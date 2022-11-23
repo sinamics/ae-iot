@@ -20,7 +20,7 @@ HeatCtl = HeatController()
 # read yaml config file
 config = HeatCtl.read_config()
 
-r = redis.Redis(host='redis', port=6379, db=0)
+r = redis.Redis(host='localhost', port=6379, db=0)
 redis_db = r.get("{}/config".format(HeatCtl.read_config()["client_id"]))
 
 # gpio setup
@@ -66,8 +66,8 @@ def publish_message(msg):
     sys.exit(0)
 
 def redis_config():
-    if redis_db and "operational_mode" in json.dumps(redis_db):
-        return json.dumps(redis_db)
+    if redis_db and "operational_mode" in json.loads(redis_db.decode("utf-8")):
+        return json.loads(redis_db.decode("utf-8"))
     else:
         return {"operational_mode": "auto"}
         
@@ -90,10 +90,10 @@ pub_message = dict({
     "operational_mode": _redis_db["operational_mode"]
 })
 
-if _redis_db["operational_mode"] == "stopped":
+if _redis_db["operational_mode"] == "stopp":
     publish_message(pub_message)
 
-if spot_kwh_price < config["fuel_kwh_price"] and (_redis_db["operational_mode"] == "eletric" or _redis_db["operational_mode"] == "auto"):
+if spot_kwh_price < config["fuel_kwh_price"] and (_redis_db["operational_mode"] == "electric" or _redis_db["operational_mode"] == "auto"):
     print("Prioritizes electric heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.HIGH)
