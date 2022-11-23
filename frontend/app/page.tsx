@@ -7,8 +7,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import ReactTimeAgo from 'react-time-ago'
 import { Dropdown } from '../components/dropdown';
 
-const SERVER_URL="http://10.0.0.150:5000"
-// const SERVER_URL="https://iotsrv1.egeland.io"
+// const SERVER_URL="http://10.0.0.150:5000"
+const SERVER_URL="https://iotsrv1.egeland.io"
 
 const socket = io(SERVER_URL);
 
@@ -95,7 +95,6 @@ export default function Home() {
     setIotDevices(data)
   },[data])
   
-  console.log(data)
   if(isLoading) return <div className="flex justify-center text-2xl ">Loading IoT devices...</div>
 
   return (
@@ -105,8 +104,8 @@ export default function Home() {
             return <div className='mt-5' key={d["iot-device"]}>
                 <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80'>
                   <div className='flex justify-center mb-2'>
-                    <Dropdown onSelect={actionHandler} />
                     {d.friendly_name}
+                    <Dropdown onSelect={actionHandler} />
                     </div>
                   <div className='flex justify-between'>
                     <span>System:</span>
