@@ -11,14 +11,17 @@ const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 const socket = io(SERVER_URL, { transports: ['websocket'] });
 
-const iot: any = [{}];
 interface IDevice {
-  datetime: Date;
+  datetime: string;
+  electric_price: number;
+  electric_time_to_start: string;
   friendly_name: string;
+  fuel_price: number;
+  fuel_time_to_start: string;
   heater: string;
   'iot-device': string;
-  electric_time_to_start: string;
-  fuel_time_to_start: string;
+  operational_mode: string;
+  system: string;
   uptime: string;
 }
 
@@ -41,27 +44,29 @@ const postData = async (data: any) => {
   return response.json();
 };
 const App = () => {
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  // const [isConnected, setIsConnected] = useState(socket.connected);
   const [iotDevices, setIotDevices] = useState<any>([]);
 
-  const { isLoading, isError, data, error, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['devices'],
     queryFn: fetchData,
   });
-  const { mutate } = useMutation(postData, { networkMode: 'always' });
+  const { mutate, isLoading: postLoading } = useMutation(postData, {
+    networkMode: 'online',
+  });
 
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log('websocket connected');
-      setIsConnected(true);
-    });
+    // socket.on('connect', () => {
+    //   console.log('websocket connected');
+    //   setIsConnected(true);
+    // });
 
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-    });
+    // socket.on('disconnect', () => {
+    //   setIsConnected(false);
+    // });
 
     socket.on('iotping', (devices) => {
-      console.log('new message', devices);
+      // console.log('new message', devices);
 
       const msg: IDevice = JSON.parse(devices);
       const dev = [...iotDevices];
@@ -101,18 +106,21 @@ const App = () => {
   if (isLoading)
     return (
       <div className='flex justify-center text-2xl '>
-        Loading IoT devices...
+        Loading IoT devices, please wait!
       </div>
     );
-  // console.log(data)
 
   return (
     <main>
       <div className='flex justify-center'>
         {iotDevices.map((d: any, idx: any) => {
           return (
-            <div className='mt-5' key={d['iot-device']}>
-              <div className='flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative'>
+            <div className='mt-5 ' key={d['iot-device']}>
+              {/* {isSuccess && !isIdle ? 'action sent!' : null} */}
+              <div
+                className={`flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative shadow-2xl bg-slate-900
+                ${postLoading ? 'border-orange-500' : ''}`}
+              >
                 <span className='absolute right-2 top-2'>
                   <Dropdown
                     onSelect={actionHandler}
