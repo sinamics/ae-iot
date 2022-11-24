@@ -27,7 +27,6 @@ const fetchData = async () => {
 
 const App = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [lastPong, setLastPong] = useState('');
   const [iotDevices, setIotDevices] = useState<any>([]);
 
   const { isLoading, isError, data, error } = useQuery({
