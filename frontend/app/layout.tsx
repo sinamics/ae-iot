@@ -1,22 +1,16 @@
-"use client"
-import './globals.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import TimeAgo from 'javascript-time-ago'
+'use client';
+import './globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import en from 'javascript-time-ago/locale/en.json'
-
-TimeAgo.addDefaultLocale(en)
-TimeAgo.addLocale(en)
-
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       {/*
         <head /> will contain the components returned by the nearest parent
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
@@ -27,9 +21,9 @@ export default function RootLayout({
           <h1>Søhagen IoT Dashboard</h1>
         </header>
         <QueryClientProvider client={queryClient}>
-        {children}
+          {children}
         </QueryClientProvider>
-        </body>
+      </body>
     </html>
-  )
+  );
 }
