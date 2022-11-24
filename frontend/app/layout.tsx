@@ -1,6 +1,7 @@
 'use client';
 import './globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MantineProvider } from '@mantine/core';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,9 @@ export default function RootLayout({
           <h1>Søhagen IoT Dashboard</h1>
         </header>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <MantineProvider withGlobalStyles withNormalizeCSS>
+            {children}
+          </MantineProvider>
         </QueryClientProvider>
       </body>
     </html>
