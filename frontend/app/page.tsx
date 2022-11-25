@@ -19,7 +19,7 @@ interface IDevice {
   fuel_price: number;
   fuel_time_to_start: string;
   heater: string;
-  'iot-device': string;
+  client_id: string;
   operational_mode: string;
   system: string;
   uptime: string;
@@ -73,7 +73,7 @@ const App = () => {
 
       // check if device exsist in list
       const index = iotDevices.findIndex(
-        (f: any) => f['iot-device'] === msg['iot-device']
+        (f: any) => f['client_id'] === msg['client_id']
       );
       // update or add
       if (index !== -1) {
@@ -82,7 +82,7 @@ const App = () => {
       }
 
       setIotDevices((prev: any) => {
-        console.log(prev);
+        // console.log(prev);
         return [...prev, { ...msg }];
       });
     });
@@ -115,7 +115,7 @@ const App = () => {
       <div className='flex justify-center'>
         {iotDevices.map((d: any, idx: any) => {
           return (
-            <div className='mt-5 ' key={d['iot-device']}>
+            <div className='mt-5 ' key={d['client_id']}>
               {/* {isSuccess && !isIdle ? 'action sent!' : null} */}
               <div
                 className={`flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative shadow-2xl bg-slate-900 select-none
@@ -124,7 +124,7 @@ const App = () => {
                 <span className='absolute right-2 top-2'>
                   <Dropdown
                     onSelect={actionHandler}
-                    clientId={d['iot-device']}
+                    client_id={d['client_id']}
                   />
                 </span>
                 <div className='flex justify-center mb-2'>
@@ -132,7 +132,7 @@ const App = () => {
                 </div>
                 <div className='flex justify-between'>
                   <span>Client id:</span>
-                  <span>{d['iot-device']}</span>
+                  <span>{d['client_id']}</span>
                 </div>
                 <div className='flex justify-between'>
                   <span>Operational Mode:</span>

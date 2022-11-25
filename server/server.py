@@ -43,12 +43,12 @@ class Server():
         def action():
             data = request.get_json()
 
-            if not data["clientId"]:
+            if not data["client_id"]:
                 return jsonify('No clientId'),500
          
             # Returning an api for showing in  reactjs
-            self.mq.publish("iot/subscribe/{}".format(data["clientId"]), json.dumps(data))
-            print(data["clientId"])
+            self.mq.publish("iot/subscribe/{}".format(data["client_id"]), json.dumps(data))
+            print(data["client_id"])
             return jsonify('OK'),200
             
         # Route for seeing a data
@@ -56,10 +56,10 @@ class Server():
         def devices():
             # Returning an api for showing in  reactjs
             # redis_devices = r.keys("iot-device*")
-            # r.delete("iot-device-100")
+            # self.r.delete("iot-device-100")
 
             devices_arr = []
-            for device in self.r.scan_iter(match='iot-device*'):
+            for device in self.r.scan_iter(match='iot*'):
                 node = self.r.get(device)          
                 try:
                     json.loads(node)

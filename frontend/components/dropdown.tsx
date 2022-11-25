@@ -7,10 +7,10 @@ import {
   IconPlayerPlay,
 } from '@tabler/icons';
 
-export function Dropdown({ onSelect, clientId }: any) {
+export function Dropdown({ onSelect, client_id }: any) {
   const handler = (e: any) => {
     const operational_mode = e.target.innerHTML.toLowerCase();
-    onSelect({ operational_mode, clientId });
+    onSelect({ operational_mode, client_id });
   };
 
   return (
