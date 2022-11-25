@@ -15,3 +15,28 @@ services:
     restart: unless-stopped
     devices:
       - /dev/mem:/dev/mem
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    expose:
+      - 6379
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Oslo
+    volumes:
+      - ./storage/redis/:/data
+      - /etc/localtime:/etc/localtime:ro
+
+  watchtower:
+    image: containrrr/watchtower:1.5.1
+    container_name: watchtower
+    expose:
+      - 6379
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Oslo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    command: --interval 300 --include-stopped --revive-stopped --debug aeiot

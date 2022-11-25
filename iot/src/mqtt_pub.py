@@ -1,5 +1,5 @@
 from paho.mqtt import client as mqtt # type: ignore
-import sys
+from main import HeatController
 import os.path
 dirname = os.path.dirname(__file__)
 
@@ -11,11 +11,14 @@ cafile=os.path.join(dirname, 'certs/ca.crt')
 keyfile=os.path.join(dirname, 'certs/client.key')
 certfile=os.path.join(dirname, 'certs/client.crt')
 
+HeatCtl = HeatController()
+
 class MqttPublish():
     def __init__(self):
-        self.client = mqtt.Client("iot-device-100-publish")
+        self.client = mqtt.Client("{}-publish".format(HeatCtl.read_config()["client_id"]))
         self.client.tls_set(ca_certs=cafile, certfile=certfile, keyfile=keyfile, cert_reqs=True)
-        self.client.connect("mqtt.kodea.no", 8884)
+        self.client.connect("mqtt.kodea.no", 8884, 60)
+        self.client.reconnect_delay_set(min_delay=1, max_delay=120)
         self.client.on_connect = self.on_connect
 
     def on_connect(self, mqttc, obj, flags, rc):
@@ -24,18 +27,8 @@ class MqttPublish():
     def publish(self, msg):
         self.client.loop_start()
 
-        infot = self.client.publish("iot/device/iot-device-100", msg, qos=2)
+        infot = self.client.publish("iot/device/{}".format(HeatCtl.read_config()["client_id"]), msg, qos=2)
         infot.wait_for_publish()
 
         self.client.loop_stop()
         self.client.disconnect()
-
-
-# print("rc: "+str(rc))
-# if __name__ == '__main__':
-
-#   try:
-#     main()
-#   except KeyboardInterrupt:
-#     pass
-#   finally:

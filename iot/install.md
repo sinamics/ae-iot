@@ -13,6 +13,7 @@ newgrp docker
 
 # docker compose
 sudo apt-get install docker-compose
+sudo apt-get start docker
 
 # sudo apt-get install libffi-dev libssl-dev
 # sudo apt install python3-dev

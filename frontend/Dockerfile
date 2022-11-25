@@ -3,7 +3,7 @@
 FROM node:lts-alpine AS deps
 
 WORKDIR /opt/app
-COPY frontend/package.json frontend/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -14,7 +14,7 @@ FROM node:lts-alpine AS builder
 
 ENV NODE_ENV=production
 WORKDIR /opt/app
-COPY ./frontend .
+COPY . .
 COPY --from=deps /opt/app/node_modules ./node_modules
 RUN npm run build
 
@@ -32,3 +32,5 @@ COPY --from=builder /opt/app/node_modules ./node_modules
 EXPOSE 3000
 
 CMD ["node_modules/.bin/next", "start"]
+
+# sudo docker build -t sinamics/ae-iot-frontend -f Dockerfile.frontend .

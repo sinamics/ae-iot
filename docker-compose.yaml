@@ -5,6 +5,9 @@ services:
   frontend:
     image: sinamics/ae-iot-frontend
     container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     networks:
       - iot
     environment:
@@ -13,18 +16,19 @@ services:
       - TZ=Europe/Oslo
 
     volumes:
-      - /home/serveradmin/deluge/config:/config
-      - /home/serveradmin/deluge/download:/downloads
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     ports:
-     - "3000:3000"
+      - '3000:3000'
     depends_on:
       - backend
 
   backend:
     image: sinamics/ae-iot-backend
     container_name: backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     networks:
       - iot
     environment:
@@ -34,11 +38,12 @@ services:
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./server/certs:/app/certs:ro
 
     #   - ./storage/backend/:/app
     restart: unless-stopped
     ports:
-     - "5000:5000"
+      - '5000:5000'
     depends_on:
       - redis
 
@@ -59,9 +64,10 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
+    hostname: redis
     networks:
       - iot
-    expose:
+    ports:
       - 6379
     restart: unless-stopped
     environment:
@@ -76,7 +82,7 @@ services:
     networks:
       - iot
     volumes:
-      - ./storage/mosquitto/certs:/mosquitto/certs:ro
+      - ./storage/mosquitto/certs:/mosquitto/certs
       - ./storage/mosquitto/config:/mosquitto/config
       - ./storage/mosquitto/data:/mosquitto/data
       - ./storage/mosquitto/log:/mosquitto/log

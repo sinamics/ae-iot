@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+
+FROM --platform=$TARGETPLATFORM python:3.10-slim-buster
+
+WORKDIR /ae-iot/iot
+ENV TZ=Europe/Oslo
+
+COPY install/requirements.txt requirements.txt
+RUN apt-get update -y
+RUN apt-get install -y \
+                    gcc build-essential \
+                    cron \
+                    nano \
+                    procps
+
+RUN pip3 install -r requirements.txt
+
+COPY . .
+
+# COPY ./src .
+# COPY ./config.yaml .
+# COPY ./install ./install
+# COPY ./install/install.sh .
+# COPY ./install/entrypoint.sh .
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ./install/install.sh
+
+CMD [ "/ae-iot/iot/install/entrypoint.sh" ]
+# CMD [ "cron", "&&", "tail", "-f", "/var/log/cron.log"]
+
+# CMD [ "cron", "&&", "/usr/local/bin/python3", "/ae-iot/iot/src/mqtt_sub.py"]
+
+# MULTIARCH BUILD #
+#
+# docker buildx create --name iot
+# docker buildx use iot
+# docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+# docker run --privileged --rm tonistiigi/binfmt --install all
+# docker buildx build --pull --rm -f "Dockerfile.iot_prod" --platform linux/arm/v7,linux/arm64,linux/amd64 -t sinamics/ae-iot . --push

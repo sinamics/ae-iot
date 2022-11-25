@@ -1,13 +1,14 @@
 from main import HeatController
 import RPi.GPIO as GPIO
-from mqtt import MqttPublish
+from mqtt_pub import MqttPublish
 from datetime import datetime, date, timedelta
-# from pprint import pprint
+from pprint import pprint
 import json
 import psutil
 import time
 import sys
 import pytz
+import redis
 
 mqtt = MqttPublish()
 
@@ -16,9 +17,11 @@ mqtt = MqttPublish()
 #
 # instantiate new class
 HeatCtl = HeatController()
-
 # read yaml config file
 config = HeatCtl.read_config()
+
+r = redis.Redis(host='redis', port=6379, db=0)
+redis_db = r.get("{}/config".format(HeatCtl.read_config()["client_id"]))
 
 # gpio setup
 GPIO.setmode(GPIO.BOARD) # use board pin number and not BCM chip numbers
@@ -57,6 +60,20 @@ def date_formatter(date):
 
     return str(date - now).split(".")[0]
 
+def publish_message(msg):
+    pprint(pub_message)
+    mqtt.publish(json.dumps(msg, indent=4, sort_keys=True, default=str))
+    sys.exit(0)
+
+def redis_config():
+    if redis_db and "operational_mode" in json.loads(redis_db.decode("utf-8")):
+        return json.loads(redis_db.decode("utf-8"))
+    else:
+        return {"operational_mode": "auto"}
+        
+   
+_redis_db = redis_config()
+
 # sys.exit()
 # create dict
 pub_message = dict({
@@ -64,15 +81,26 @@ pub_message = dict({
     "system": HeatCtl.hostname,
     "iot-device": config["client_id"],
     "friendly_name": config["friendly_name"],
-    "heater": None,
+    "heater": "stopped",
     "electric_time_to_start": date_formatter(forcast["electric_time_to_start"]),
     "fuel_time_to_start": date_formatter(forcast["fuel_time_to_start"]),
     "fuel_price": config["fuel_kwh_price"],
     "electric_price": spot_kwh_price,
-    "uptime": str(timedelta(seconds=time.time() - psutil.boot_time())).split(".")[0]
+    "uptime": str(timedelta(seconds=time.time() - psutil.boot_time())).split(".")[0],
+    "operational_mode": _redis_db["operational_mode"]
 })
 
-if spot_kwh_price < config["fuel_kwh_price"]:
+if _redis_db["operational_mode"] == "stopp":
+    pub_message["heater"] = "stopped"
+    pub_message["electric_time_to_start"] = "stopped"
+    pub_message["fuel_time_to_start"] = "stopped"
+
+    GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
+    GPIO.output(config["fuel_gpio_output_pin"], GPIO.LOW)
+
+    publish_message(pub_message)
+
+if (spot_kwh_price < config["fuel_kwh_price"] and _redis_db["operational_mode"] == "auto") or _redis_db["operational_mode"] == "electric":
     print("Prioritizes electric heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.HIGH)
@@ -81,15 +109,16 @@ if spot_kwh_price < config["fuel_kwh_price"]:
     #print(GPIO.input(config["electric_gpio_output_pin"]))
     
     pub_message["heater"] = "electric"
+    publish_message(pub_message)
 
-else:
+if (spot_kwh_price >= config["fuel_kwh_price"] and _redis_db["operational_mode"] == "auto") or _redis_db["operational_mode"] == "fuel":
     print("Prioritizes fuel heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
     GPIO.output(config["fuel_gpio_output_pin"], GPIO.HIGH)
 
     pub_message["heater"] = "fuel"
+    publish_message(pub_message)
 
-# pprint(pub_message)
-mqtt.publish(json.dumps(pub_message, indent=4, sort_keys=True, default=str))
-sys.exit(0)
+
+
