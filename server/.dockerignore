@@ -1,5 +1,3 @@
 **/certs
-**/node_modules/
 **/storage
-**/.next
 **/.vscode

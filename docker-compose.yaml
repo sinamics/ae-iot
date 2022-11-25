@@ -6,8 +6,8 @@ services:
     image: sinamics/ae-iot-frontend
     container_name: frontend
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     networks:
       - iot
     environment:
@@ -16,8 +16,6 @@ services:
       - TZ=Europe/Oslo
 
     volumes:
-      - /home/serveradmin/deluge/config:/config
-      - /home/serveradmin/deluge/download:/downloads
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     ports:
@@ -29,8 +27,8 @@ services:
     image: sinamics/ae-iot-backend
     container_name: backend
     build:
-      context: .
-      dockerfile: Dockerfile.backend
+      context: ./server
+      dockerfile: Dockerfile
     networks:
       - iot
     environment:

@@ -77,7 +77,7 @@ class Server():
         # Handle the webapp connecting to the websocket
         @socketio.on('connect')
         def test_connect(self):
-            print('someone connected to websocket')
+            print('someone connected to websockets')
             # emit('responseMessage', {'data': 'Connected! ayy'})
             # need visibility of the global thread object
 
