@@ -1,4 +1,3 @@
-import sys
 import nordpool.elspot as nordpool
 from pprint import pprint
 from datetime import datetime, date, timedelta
@@ -52,7 +51,12 @@ class HeatController(object):
 
     def fetch_prices(self, *args):
         # fetching prices
-        spot_price = nordpool.Prices("NOK").hourly(areas=[self.config["nordpool_region"]],end_date=date.today())
+        try:
+             spot_price = nordpool.Prices("NOK").hourly(areas=[self.config["nordpool_region"]],end_date=date.today())
+        except:
+            print("Could not fetch data from nordpool!!")
+            return False
+       
         
         try:
             with open(os.path.expanduser('todays_prices.json'), "w") as outfile:

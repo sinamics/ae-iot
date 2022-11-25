@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import TimeAgo from 'react-timeago';
 import { Dropdown } from '../components/dropdown';
 
-// const SERVER_URL="http://10.0.0.150:5000"
+// const SERVER_URL = 'http://10.0.0.150:5000';
 const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 const socket = io(SERVER_URL, { transports: ['websocket'] });
@@ -118,7 +118,7 @@ const App = () => {
             <div className='mt-5 ' key={d['iot-device']}>
               {/* {isSuccess && !isIdle ? 'action sent!' : null} */}
               <div
-                className={`flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative shadow-2xl bg-slate-900
+                className={`flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative shadow-2xl bg-slate-900 select-none
                 ${postLoading ? 'border-orange-500' : ''}`}
               >
                 <span className='absolute right-2 top-2'>

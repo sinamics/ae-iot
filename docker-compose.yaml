@@ -5,6 +5,9 @@ services:
   frontend:
     image: sinamics/ae-iot-frontend
     container_name: frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
     networks:
       - iot
     environment:
@@ -18,13 +21,16 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     ports:
-     - "3000:3000"
+      - '3000:3000'
     depends_on:
       - backend
 
   backend:
     image: sinamics/ae-iot-backend
     container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
     networks:
       - iot
     environment:
@@ -39,7 +45,7 @@ services:
     #   - ./storage/backend/:/app
     restart: unless-stopped
     ports:
-     - "5000:5000"
+      - '5000:5000'
     depends_on:
       - redis
 
@@ -78,7 +84,7 @@ services:
     networks:
       - iot
     volumes:
-      - ./storage/mosquitto/certs:/mosquitto/certs:ro
+      - ./storage/mosquitto/certs:/mosquitto/certs
       - ./storage/mosquitto/config:/mosquitto/config
       - ./storage/mosquitto/data:/mosquitto/data
       - ./storage/mosquitto/log:/mosquitto/log

@@ -28,8 +28,10 @@ COPY . .
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN ./install/install.sh
 
-ENTRYPOINT [ "/ae-iot/iot/install/entrypoint.sh" ]
-CMD [ "cron", "&&", "tail", "-f", "/var/log/cron.log"]
+CMD [ "/ae-iot/iot/install/entrypoint.sh" ]
+# CMD [ "cron", "&&", "tail", "-f", "/var/log/cron.log"]
+
+# CMD [ "cron", "&&", "/usr/local/bin/python3", "/ae-iot/iot/src/mqtt_sub.py"]
 
 # MULTIARCH BUILD #
 #

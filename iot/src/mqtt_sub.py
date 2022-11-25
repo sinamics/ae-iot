@@ -38,6 +38,7 @@ class MqttSubscribe(mqtt.Client):
         print(string)
 
     def run(self):
+        # self.reconnect_delay_set(min_delay=1, max_delay=120)
         self.tls_set(ca_certs=cafile, certfile=certfile, keyfile=keyfile, cert_reqs=True)
         self.connect("mqtt.kodea.no", 8884, 60)
         self.subscribe("iot/subscribe/{}".format(HeatCtl.read_config()["client_id"]), 0)
