@@ -8,7 +8,6 @@ curl -fsSL https://test.docker.com -o test-docker.sh
 sudo sh test-docker.sh
 sudo systemctl enable docker
 
-sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 
@@ -24,6 +23,8 @@ sudo git clone \
 
 cd ae-iot
 sudo git sparse-checkout set iot
+
+sudo chmod +x provisioning.sh
 
 read -p 'type client id (without spaces): ' client_id
 
