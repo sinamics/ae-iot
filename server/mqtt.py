@@ -10,7 +10,7 @@ port = 8884
 
 # generate client ID with pub prefix randomly
 client_id = f'mqtt-controller'
-clients = ["iot/device/iot-device-100"]
+clients = ["iot-rpios-100", "iot-rpios-101"]
 
 cafile="certs/ca.crt"
 keyfile="certs/client.key"
@@ -67,12 +67,12 @@ class Mqtt():
         # The callback for when a PUBLISH message is received from the server. print("Message received-> " 
         msg = json.loads(message.payload.decode("utf-8"))
         # print(str(message.payload.decode("utf-8")))
-        if not "iot-device" in msg:
+        if not "client_id" in msg:
             return
         
         self.socket.emit('iotping', message.payload.decode("utf-8"))
         # print("messages will be sent by socketio")
-        self.r.set(msg["iot-device"], message.payload.decode("utf-8"))
+        self.r.set(msg["client_id"], message.payload.decode("utf-8"))
         # get_iot_devices(message.payload.decode("utf-8"))
         
 
@@ -80,6 +80,6 @@ class Mqtt():
         self.client = self.connect_mqtt()
 
         for client in clients:
-            self.client.subscribe(client)
+            self.client.subscribe("iot/device/{}".format(client))
 
         self.client.loop_start()

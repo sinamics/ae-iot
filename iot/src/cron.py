@@ -79,7 +79,7 @@ _redis_db = redis_config()
 pub_message = dict({
     "datetime": datetime.now(),
     "system": HeatCtl.hostname,
-    "iot-device": config["client_id"],
+    "client_id": config["client_id"],
     "friendly_name": config["friendly_name"],
     "heater": "stopped",
     "electric_time_to_start": date_formatter(forcast["electric_time_to_start"]),

@@ -1,5 +1,5 @@
-client_id: iot-device-100
-friendly_name: "egeland device #1"
+client_id: iot-rpios-100 # !IMPORTANT client_id has to start with "iot"
+friendly_name: 'egeland device #1'
 data_nested_path: areas_Kr.sand_values # Do not change!
 nordpool_region: Kr.sand # https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/NO/Weekly/?view=table
 fuel_kwh_price: 270 # Øre pr kwh
