@@ -7,6 +7,7 @@ from main import HeatController
 import os.path
 import os
 import redis
+import json
 
 dirname = os.path.dirname(__file__)
 
@@ -25,6 +26,12 @@ class MqttSubscribe(mqtt.Client):
 
     def on_message(self, mqttc, obj, msg):
         print(msg.payload.decode("utf-8"))
+        try:
+            json.loads(msg.payload.decode("utf-8"))
+        except:
+            print("invalid json data received from mqtt broker!")
+            return
+
         r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
         os.system('python3 /ae-iot/iot/src/cron.py')
 

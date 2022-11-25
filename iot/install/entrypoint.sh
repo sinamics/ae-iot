@@ -11,6 +11,7 @@ echo "First Run" > /var/log/mqtt_sub.log
 
 /usr/local/bin/python3 /ae-iot/iot/src/cron.py |tee -a /var/log/cron.log
 
+cron
 
 # # Wait for any process to exit
 # wait -n
