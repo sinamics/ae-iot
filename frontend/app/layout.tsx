@@ -33,7 +33,7 @@ export default function RootLayout({
         <footer className='hidden absolute bottom-0 w-full p-4 bg-white shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-[rgb(54,58,63)]'>
           <span className='text-sm text-gray-500 sm:text-center dark:text-gray-400'>
             © 2022{' '}
-            <a href='https://flowbite.com/' className='hover:underline'>
+            <a href='https://linkme.egeland.io' className='hover:underline'>
               Kodea Solutions™
             </a>
             . All Rights Reserved.
