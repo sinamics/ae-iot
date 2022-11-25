@@ -15,11 +15,16 @@ newgrp docker
 sudo apt-get install docker-compose
 sudo apt-get start docker
 
-git clone \
+sudo git clone \
   --depth 1  \
   --filter=blob:none  \
   --sparse \
   https://github.com/sinamics/ae-iot.git \
 ;
+
 cd ae-iot
-git sparse-checkout set iot
+sudo git sparse-checkout set iot
+
+read -p 'type client id (without spaces): ' client_id
+
+sed -i "/^\(client_id: \).*/s//\1'$client_id'/" config.yml
