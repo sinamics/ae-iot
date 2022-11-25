@@ -29,7 +29,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:1.5.1
     container_name: watchtower
     expose:
       - 6379
