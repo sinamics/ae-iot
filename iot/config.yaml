@@ -5,3 +5,55 @@ nordpool_region: Kr.sand # https://www.nordpoolgroup.com/en/Market-data1/Dayahea
 fuel_kwh_price: 270 # Øre pr kwh
 fuel_gpio_output_pin: 38 # (GPIO20) High when fuel kwh price is less than electric kwh price
 electric_gpio_output_pin: 40 # (GPIO21)
+
+type: custom:apexcharts-card
+header:
+  show: true
+  title: Nordpool Prize -> 48 hours
+  show_states: true
+graph_span: 2d
+now:
+  show: true
+  color: '#ff0000'
+  label: Now
+span:
+  start: day
+series:
+  - entity: sensor.nordpool_kwh_krsand_nok_3_095_0
+    name: Today
+    unit: Kr
+    color: yellow
+    data_generator: >
+      let thisdate = new Date();
+      thisdate.setHours(24,0,0,0);
+
+      const today = [...entity.attributes.raw_today,
+      {start:thisdate.toISOString()}]; return
+      today.map((entry,idx) => {
+        if(idx > 23) return [new Date(entry.start), null];
+        return [new Date(entry.start), entry.value * 1.25];
+      });
+    type: column
+    group_by:
+      func: max
+      duration: 60min
+    show:
+      legend_value: false
+      in_header: false
+      extremas: true
+    extend_to: end
+  - entity: sensor.nordpool_kwh_krsand_nok_3_095_0
+    name: Tomorrow
+    unit: Kr
+    data_generator: |
+      return entity.attributes.raw_tomorrow.map((entry) => {
+        return [new Date(entry.start), entry.value * 1.25];
+      });
+    type: column
+    group_by:
+      func: max
+      duration: 60min
+    show:
+      legend_value: false
+      in_header: false
+      extremas: true
