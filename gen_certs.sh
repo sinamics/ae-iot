@@ -5,21 +5,24 @@ SUBJECT_CA="/C=NO/ST=Kristiansand/L=Kristiansand/O=kodea/OU=CA/CN=$IP"
 SUBJECT_SERVER="/C=NO/ST=Kristiansand/L=Kristiansand/O=kodea/OU=Server/CN=$IP"
 SUBJECT_CLIENT="/C=NO/ST=Kristiansand/L=Kristiansand/O=kodea/OU=Client/CN=$IP"
 
+DAYS=7300
+mkdir certs
+
 function generate_CA () {
    echo "$SUBJECT_CA"
-   openssl req -x509 -nodes -sha256 -newkey rsa:2048 -subj "$SUBJECT_CA"  -days 365 -keyout ca.key -out ca.crt
+   openssl req -x509 -nodes -sha256 -newkey rsa:2048 -subj "$SUBJECT_CA"  -days "$DAYS" -keyout certs/ca.key -out certs/ca.crt
 }
 
 function generate_server () {
    echo "$SUBJECT_SERVER"
-   openssl req -nodes -sha256 -new -subj "$SUBJECT_SERVER" -keyout server.key -out server.csr
-   openssl x509 -req -sha256 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365
+   openssl req -nodes -sha256 -new -subj "$SUBJECT_SERVER" -keyout certs/server.key -out certs/server.csr
+   openssl x509 -req -sha256 -in certs/server.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/server.crt -days "$DAYS"
 }
 
 function generate_client () {
    echo "$SUBJECT_CLIENT"
-   openssl req -new -nodes -sha256 -subj "$SUBJECT_CLIENT" -out client.csr -keyout client.key 
-   openssl x509 -req -sha256 -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365
+   openssl req -new -nodes -sha256 -subj "$SUBJECT_CLIENT" -out certs/client.csr -keyout certs/client.key 
+   openssl x509 -req -sha256 -in certs/client.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/client.crt -days "$DAYS"
 }
 
 generate_CA
