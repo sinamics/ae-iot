@@ -10,7 +10,7 @@ services:
       - PGID=1000
       - /etc/localtime:/etc/localtime:ro
     volumes:
-      - ./storage/aeiot/config.yaml:/app/config.yaml:ro
+      - ./storage/aeiot/config.yaml:/ae-iot/iot/config.yaml:ro
       - ./storage/aeiot/certs:/ae-iot/iot/src/certs:ro
     restart: unless-stopped
     devices:

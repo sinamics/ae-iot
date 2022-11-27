@@ -43,7 +43,8 @@ const postData = async (data: any) => {
   });
   return response.json();
 };
-const Iot = ({ devices }: any) => {
+
+const Iot = ({ devices }: { devices: IDevice[] }) => {
   // const [isConnected, setIsConnected] = useState(socket.connected);
   const [iotDevices, setIotDevices] = useState<any>([]);
 
