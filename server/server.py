@@ -30,7 +30,6 @@ class Server():
         app.debug = args["debug"]
         self.mqtt = mqtt
 
-
         redis_host = "redis"
         if app.debug:
             redis_host = "localhost"
@@ -48,7 +47,6 @@ class Server():
          
             # Returning an api for showing in  reactjs
             self.mq.publish("iot/subscribe/{}".format(data["client_id"]), json.dumps(data))
-            print(data["client_id"])
             return jsonify('OK'),200
             
         # Route for seeing a data
