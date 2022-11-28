@@ -100,13 +100,13 @@ class HeatController(object):
         for r in prices["areas"][self.config["nordpool_region"]]["values"]:
             if "value" and "start" and "end" in r:
                 start_pricetime = datetime.strptime(r["start"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
-                # end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
+                end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 
                 el_price = float(r["value"]) / 10 * 1.25
                 fuel_price = self.config["fuel_kwh_price"]
 
                 now = datetime.utcnow().replace(tzinfo=utc_tz)
-                if start_pricetime >= now :
+                if end_pricetime >= now :
                     if el_price >= fuel_price:
                         if fuel_time_set:
                             continue
