@@ -114,11 +114,14 @@ const Iot = () => {
   return (
     <div className='flex justify-center flex-wrap w-full'>
       {iotDevices.map((d: any, idx: any) => {
+        console.log(d);
         return (
           <div
             key={d['client_id']}
-            className={`w-[300px] flex flex-col justify-between border rounded-lg m-4 p-4 relative shadow-2xl bg-slate-900 select-none
-                ${postLoading ? 'border-orange-500' : ''}`}
+            className={`w-[300px] flex flex-col justify-between border rounded-lg m-4 p-4 relative shadow-2xl bg-slate-900 select-none 
+                ${postLoading ? 'border-orange-500' : ''} ${
+              d?.available ? 'border-green-500' : 'border-red-500'
+            }`}
           >
             <span className='absolute right-2 top-2'>
               <Dropdown onSelect={actionHandler} client_id={d['client_id']} />

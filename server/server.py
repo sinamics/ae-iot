@@ -83,8 +83,8 @@ class Server():
         # @run_with_reloader
         # def run_server(self):
 
-        if app.debug:
-            CORS(app)
+        # if app.debug:
+        CORS(app)
 
         self.mq = self.mqtt(socketio, app.debug, self.r)
         self.mq.run()
