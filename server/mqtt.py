@@ -80,7 +80,6 @@ class Mqtt():
         else:
             msg["available"] = "online"
 
-        print(msg["available"])
         self.socket.emit('iotping', message.payload.decode("utf-8"))
         # print("messages will be sent by socketio")
         self.r.set(msg["client_id"], message.payload.decode("utf-8"))
