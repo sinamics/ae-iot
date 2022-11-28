@@ -75,22 +75,6 @@ class Mqtt():
         # print(str(message.payload.decode("utf-8")))
         if not "client_id" in msg:
             return
-        
-        try:
-            lastseen_with_offset = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=pytz.utc) + timedelta(minutes=15)
-            now = datetime.now().replace(tzinfo=pytz.utc)
-            print("lastseen {}".format(lastseen_with_offset))
-            print("now {}".format(now))
-            
-            if now > lastseen_with_offset:
-                msg["available"] = False
-            else:
-                msg["available"] = True
-
-        except BaseException as e:
-            print('Failed to do something: ' + str(e))
-            pass
-
 
         self.socket.emit('iotping', json.dumps(msg))
         # print("messages will be sent by socketio")

@@ -23,7 +23,7 @@ export default function RootLayout({
             IoT Dashboard
           </h1>
           <p className='flex justify-center text-gray-400 mt-2'>
-            Clients reporting every 5min
+            Clients will report every 5min
           </p>
         </header>
         <QueryClientProvider client={queryClient}>
