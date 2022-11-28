@@ -1,6 +1,8 @@
 # Import flask and datetime module for showing date and time
 from __future__ import print_function # In python 2.7
 from paho.mqtt import client as mqtt_client # type: ignore
+from datetime import datetime, date, timedelta
+import pytz
 import json
 
 
@@ -67,9 +69,18 @@ class Mqtt():
         # The callback for when a PUBLISH message is received from the server. print("Message received-> " 
         msg = json.loads(message.payload.decode("utf-8"))
         # print(str(message.payload.decode("utf-8")))
-        if not "client_id" in msg:
+        if not "client_id" or "datetime" in msg:
             return
         
+        lastseen = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=pytz.utc)
+        now_with_offset = datetime.utcnow().replace(tzinfo=pytz.utc) + timedelta(minutes=15)
+
+        if lastseen > now_with_offset:
+            msg["available"] = "offline"
+        else:
+            msg["available"] = "online"
+
+
         self.socket.emit('iotping', message.payload.decode("utf-8"))
         # print("messages will be sent by socketio")
         self.r.set(msg["client_id"], message.payload.decode("utf-8"))
