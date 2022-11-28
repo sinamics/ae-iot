@@ -110,6 +110,7 @@ const Iot = () => {
         Loading IoT devices, please wait!
       </div>
     );
+
   return (
     <div className='flex justify-center flex-wrap w-full'>
       {iotDevices.sort().map((d: any, idx: any) => {
