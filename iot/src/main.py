@@ -102,7 +102,7 @@ class HeatController(object):
                 start_pricetime = datetime.strptime(r["start"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 
-                el_price = float(r["value"]) / 10
+                el_price = float(r["value"]) / 10 * 1.25
                 fuel_price = self.config["fuel_kwh_price"]
 
                 now = datetime.utcnow().replace(tzinfo=utc_tz)
