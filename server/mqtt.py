@@ -72,13 +72,18 @@ class Mqtt():
         if not "client_id" in msg:
             return
         
-        lastseen = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=pytz.utc)
-        now_with_offset = datetime.utcnow().replace(tzinfo=pytz.utc) + timedelta(minutes=15)
+        try:
+            lastseen = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=pytz.utc)
+            now_with_offset = datetime.utcnow().replace(tzinfo=pytz.utc) + timedelta(minutes=15)
 
-        if lastseen > now_with_offset:
-            msg["available"] = "offline"
-        else:
-            msg["available"] = "online"
+            if lastseen > now_with_offset:
+                msg["available"] = "offline"
+            else:
+                msg["available"] = "online"
+        except:
+            pass
+
+           
 
         self.socket.emit('iotping', message.payload.decode("utf-8"))
         # print("messages will be sent by socketio")
