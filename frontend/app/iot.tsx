@@ -44,14 +44,14 @@ const postData = async (data: any) => {
   return response.json();
 };
 
-const Iot = ({ devices }: { devices: IDevice[] }) => {
+const Iot = () => {
   // const [isConnected, setIsConnected] = useState(socket.connected);
   const [iotDevices, setIotDevices] = useState<any>([]);
 
-  //   const { isLoading, data } = useQuery({
-  //     queryKey: ['devices'],
-  //     queryFn: fetchData,
-  //   });
+  const { isLoading, data: devices } = useQuery({
+    queryKey: ['devices'],
+    queryFn: fetchData,
+  });
   const { mutate, isLoading: postLoading } = useMutation(postData, {
     networkMode: 'online',
   });
@@ -104,12 +104,12 @@ const Iot = ({ devices }: { devices: IDevice[] }) => {
     setIotDevices(devices);
   }, [devices]);
 
-  //   if (isLoading)
-  //     return (
-  //       <div className='flex justify-center text-2xl '>
-  //         Loading IoT devices, please wait!
-  //       </div>
-  //     );
+  if (isLoading)
+    return (
+      <div className='flex justify-center text-2xl '>
+        Loading IoT devices, please wait!
+      </div>
+    );
 
   return (
     <div className='flex justify-center flex-wrap w-full'>
