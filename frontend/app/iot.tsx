@@ -112,69 +112,60 @@ const Iot = ({ devices }: { devices: IDevice[] }) => {
   //     );
 
   return (
-    <main>
-      <div className='flex justify-center'>
-        {iotDevices.map((d: any, idx: any) => {
-          return (
-            <div className='mt-5 ' key={d['client_id']}>
-              {/* {isSuccess && !isIdle ? 'action sent!' : null} */}
-              <div
-                className={`flex flex-col justify-between border rounded-lg m-4 p-4 w-80 relative shadow-2xl bg-slate-900 select-none
+    <div className='flex justify-center flex-wrap w-full'>
+      {iotDevices.map((d: any, idx: any) => {
+        return (
+          <div
+            key={d['client_id']}
+            className={`w-[300px] flex flex-col justify-between border rounded-lg m-4 p-4 relative shadow-2xl bg-slate-900 select-none
                 ${postLoading ? 'border-orange-500' : ''}`}
-              >
-                <span className='absolute right-2 top-2'>
-                  <Dropdown
-                    onSelect={actionHandler}
-                    client_id={d['client_id']}
-                  />
-                </span>
-                <div className='flex justify-center mb-2'>
-                  {d.friendly_name}
-                </div>
-                <div className='flex justify-between'>
-                  <span>Client id:</span>
-                  <span>{d['client_id']}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Operational Mode:</span>
-                  <span>{d.operational_mode}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Lastseen:</span>
-                  <span>
-                    <TimeAgo date={new Date(d.datetime)} />
-                  </span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Uptime:</span>
-                  <span>{d.uptime}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Heater:</span>
-                  <span>{d.heater}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Electric scheduled:</span>
-                  <span>{d.electric_time_to_start}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Fuel scheduled:</span>
-                  <span>{d.fuel_time_to_start}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Electric kWh price:</span>
-                  <span>{d.electric_price}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Fuel kWh price:</span>
-                  <span>{d.fuel_price}</span>
-                </div>
-              </div>
+          >
+            <span className='absolute right-2 top-2'>
+              <Dropdown onSelect={actionHandler} client_id={d['client_id']} />
+            </span>
+            <div className='flex justify-center mb-2'>{d.friendly_name}</div>
+            <div className='flex justify-between'>
+              <span>Client id:</span>
+              <span>{d['client_id']}</span>
             </div>
-          );
-        })}
-      </div>
-    </main>
+            <div className='flex justify-between'>
+              <span>Operational Mode:</span>
+              <span>{d.operational_mode}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Lastseen:</span>
+              <span>
+                <TimeAgo date={new Date(d.datetime)} />
+              </span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Uptime:</span>
+              <span>{d.uptime}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Heater:</span>
+              <span>{d.heater}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Electric scheduled:</span>
+              <span>{d.electric_time_to_start}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Fuel scheduled:</span>
+              <span>{d.fuel_time_to_start}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Electric kWh price:</span>
+              <span>{d.electric_price}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span>Fuel kWh price:</span>
+              <span>{d.fuel_price}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
