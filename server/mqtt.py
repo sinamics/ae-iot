@@ -69,7 +69,7 @@ class Mqtt():
         # The callback for when a PUBLISH message is received from the server. print("Message received-> " 
         msg = json.loads(message.payload.decode("utf-8"))
         # print(str(message.payload.decode("utf-8")))
-        if not "client_id" or not "datetime" in msg:
+        if not "client_id" in msg:
             return
         
         lastseen = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=pytz.utc)
