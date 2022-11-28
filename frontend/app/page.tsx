@@ -18,7 +18,7 @@ interface IDevice {
 const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 async function fetchData() {
-  const res = await fetch(`${SERVER_URL}/devices`);
+  const res = await fetch(`${SERVER_URL}/devices`, { cache: 'no-cache' });
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
 
