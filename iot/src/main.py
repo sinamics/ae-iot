@@ -84,7 +84,7 @@ class HeatController(object):
             now = datetime.utcnow().replace(tzinfo=utc_tz)
             if now >= start_pricetime and now <= end_pricetime:
                 if "value" in r:
-                    return int(r["value"]) / 10 * 1.25 # convert to Norwegian Øre/kwh, prices from nordpool is calculated in Øre/MWh.
+                    return float(r["value"]) / 10 * 1.25 # convert to Norwegian Øre/kwh, prices from nordpool is calculated in Øre/MWh.
 
         # we can assume no data for this hour was found. Return false
         return False
@@ -100,13 +100,13 @@ class HeatController(object):
         for r in prices["areas"][self.config["nordpool_region"]]["values"]:
             if "value" and "start" and "end" in r:
                 start_pricetime = datetime.strptime(r["start"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
-                end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
+                # end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 
                 el_price = float(r["value"]) / 10 * 1.25
                 fuel_price = self.config["fuel_kwh_price"]
 
                 now = datetime.utcnow().replace(tzinfo=utc_tz)
-                if now <= end_pricetime:
+                if start_pricetime >= now :
                     if el_price >= fuel_price:
                         if fuel_time_set:
                             continue
