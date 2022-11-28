@@ -84,7 +84,7 @@ class HeatController(object):
             now = datetime.utcnow().replace(tzinfo=utc_tz)
             if now >= start_pricetime and now <= end_pricetime:
                 if "value" in r:
-                    return int(r["value"]) / 10 # convert to Norwegian Øre/kwh, prices from nordpool is calculated in Øre/MWh.
+                    return int(r["value"]) / 10 * 1.25 # convert to Norwegian Øre/kwh, prices from nordpool is calculated in Øre/MWh.
 
         # we can assume no data for this hour was found. Return false
         return False
