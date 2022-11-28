@@ -6,12 +6,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import TimeAgo from 'react-timeago';
 import { Dropdown } from '../components/dropdown';
 
-// const SERVER_URL = 'http://10.0.0.150:5000';
+// const SERVER_URL = 'http://10.0.0.150:5001';
 const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 const socket = io(SERVER_URL, { transports: ['websocket'] });
 
 interface IDevice {
+  available: boolean;
   datetime: string;
   electric_price: number;
   electric_time_to_start: string;
@@ -71,7 +72,6 @@ const Iot = () => {
 
       const msg: IDevice = JSON.parse(devices);
       const dev = [...iotDevices];
-
       // check if device exsist in list
       const index = iotDevices.findIndex(
         (f: any) => f['client_id'] === msg['client_id']
@@ -110,11 +110,9 @@ const Iot = () => {
         Loading IoT devices, please wait!
       </div>
     );
-
   return (
     <div className='flex justify-center flex-wrap w-full'>
       {iotDevices.sort().map((d: any, idx: any) => {
-        console.log(d);
         return (
           <div
             key={d['client_id']}

@@ -2,6 +2,7 @@
 from __future__ import print_function # In python 2.7
 from paho.mqtt import client as mqtt_client # type: ignore
 from datetime import datetime, date, timedelta
+from pprint import pprint
 import pytz
 import json
 
@@ -22,7 +23,7 @@ class Mqtt():
     def __init__(self, socket, debug, redis) -> None:
         self.socket = socket
         self.r = redis
-
+        self.debug = debug
 
     def connect_mqtt(self):
         # def on_connect(client, userdata, flags, rc):
@@ -31,8 +32,11 @@ class Mqtt():
 
         #     else:
         #         print("Failed to connect, return code %d\n", rc)
+        if self.debug:
+            client = mqtt_client.Client()
+        else:
+            client = mqtt_client.Client(client_id)
 
-        client = mqtt_client.Client(client_id)
         client.on_message = self.on_message
         client.on_connect_fail = self.connect_fail
         client.on_log = self.on_log
@@ -73,21 +77,24 @@ class Mqtt():
             return
         
         try:
-            lastseen = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=pytz.utc)
-            now_with_offset = datetime.utcnow().replace(tzinfo=pytz.utc) + timedelta(minutes=15)
-
-            if lastseen > now_with_offset:
-                msg["available"] = "offline"
+            lastseen_with_offset = datetime.strptime(msg["datetime"], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=pytz.utc) + timedelta(minutes=15)
+            now = datetime.now().replace(tzinfo=pytz.utc)
+            print("lastseen {}".format(lastseen_with_offset))
+            print("now {}".format(now))
+            
+            if now > lastseen_with_offset:
+                msg["available"] = False
             else:
-                msg["available"] = "online"
-        except:
+                msg["available"] = True
+
+        except BaseException as e:
+            print('Failed to do something: ' + str(e))
             pass
 
-           
 
-        self.socket.emit('iotping', message.payload.decode("utf-8"))
+        self.socket.emit('iotping', json.dumps(msg))
         # print("messages will be sent by socketio")
-        self.r.set(msg["client_id"], message.payload.decode("utf-8"))
+        self.r.set(msg["client_id"], json.dumps(msg))
         # get_iot_devices(message.payload.decode("utf-8"))
         
 

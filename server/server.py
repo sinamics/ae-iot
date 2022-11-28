@@ -54,7 +54,7 @@ class Server():
         def devices():
             # Returning an api for showing in  reactjs
             # redis_devices = r.keys("iot-device*")
-            # self.r.delete("iot-device-100")
+            # self.r.delete("iot-device-101")
 
             devices_arr = []
             for device in self.r.scan_iter(match='iot*'):
@@ -64,7 +64,6 @@ class Server():
                 except:
                     break
                 pass
-    
                 devices_arr.append(json.loads(node))
 
             if app.debug:
@@ -91,7 +90,7 @@ class Server():
         # http_server = WSGIServer(('',5000), application, handler_class=WebSocketHandler)
         # http_server.serve_forever()
         eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
-        # socketio.run(app, host="0.0.0.0", port="5000" )
+        # socketio.run(app, host="0.0.0.0", port="5001" )
 
 if __name__ == '__main__':
     s = Server(Mqtt, debug=False)
