@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,27 +29,27 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult: any = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      // redirect: true,
-      callbackUrl: searchParams.get('from') || '/iot',
-    });
+    const response = await (
+      await fetch('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+    ).json();
 
     setIsLoading(false);
-    if (!signInResult?.ok) {
+    if (response.error) {
       return toast({
         title: 'Something went wrong.',
-        message: 'Your sign in request failed. Please try again.',
+        message: response.error,
         type: 'error',
       });
     }
 
-    return toast({
-      title: 'Check your email',
-      message: 'We sent you a login link. Be sure to check your spam too.',
-      type: 'success',
-    });
+    // return toast({
+    //   title: 'Check your email',
+    //   message: 'We sent you a login link. Be sure to check your spam too.',
+    //   type: 'success',
+    // });
   }
   console.log(errors);
   return (

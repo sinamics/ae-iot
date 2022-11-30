@@ -77,8 +77,6 @@ const DeviceList = ({ devices }: { devices: IDevice[] }) => {
     mutate({ ...props });
   };
 
-  console.log(iotDevices);
-
   return (
     <div className='flex justify-center flex-wrap w-full'>
       {iotDevices.sort().map((d: any, idx: any) => {

@@ -1,3 +1,4 @@
+import { toast } from '@/ui/toast';
 import Link from 'next/link';
 
 const App = () => {

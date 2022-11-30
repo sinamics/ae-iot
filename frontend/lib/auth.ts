@@ -2,6 +2,8 @@ import { NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import bcrypt from 'bcryptjs';
+
 // import { Client } from 'postmark';
 
 import { db } from '@/lib/db';
@@ -31,18 +33,27 @@ export const authOptions: NextAuthOptions = {
         const user = await db.user.findFirst({
           where: {
             email,
-            password,
           },
           // select: {
           //   emailVerified: true,
           // },
         });
-        if (user !== null) {
-          return user;
-        } else {
-          // throw new Error('User does not exists. Please make sure you insert the correct email & password.')
+
+        if (!user || !user.password) {
           return null;
         }
+        console.log(user);
+        console.log(password);
+        const isValidPassword = bcrypt.compareSync(password, user.password);
+        console.log(isValidPassword);
+        if (!isValidPassword) {
+          return null;
+        }
+        return {
+          id: user.id,
+          email: user.email,
+          // username: user.username,
+        };
       },
       credentials: {
         email: { label: 'email', type: 'text ', placeholder: 'mail@email.com' },

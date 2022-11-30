@@ -31,14 +31,14 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
 
     const signInResult: any = await signIn('credentials', {
-      email: 'cbegelan@gmail.com',
-      password: 'test1234kore',
+      email: data.email,
+      password: data.password,
       // redirect: true,
       callbackUrl: searchParams.get('from') || '/iot',
     });
 
     setIsLoading(false);
-    console.log(signInResult);
+
     if (!signInResult?.ok) {
       return toast({
         title: 'Something went wrong.',
@@ -53,7 +53,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
       type: 'success',
     });
   }
-  console.log(errors);
+
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -110,7 +110,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               //   <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
               <div>Loading</div>
             )}
-            Sign In with Email
+            Sign In
           </button>
         </div>
       </form>
