@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import TimeAgo from 'react-timeago';
 import {
+  disconnectSocket,
   initiateSocketConnection,
   subscribeToPing,
 } from '../../../service/socket';
@@ -55,22 +56,24 @@ const DeviceList = ({ devices }: { devices: IDevice[] }) => {
 
     subscribeToPing((devices: any) => {
       const msg: IDevice = JSON.parse(devices);
-      const dev = [...iotDevices];
-      // check if device exsist in list
-      const index = iotDevices.findIndex(
-        (f: any) => f['client_id'] === msg['client_id']
-      );
-      // update or add
-      if (index !== -1) {
-        dev[index] = msg;
-        return setIotDevices(dev);
-      }
 
       setIotDevices((prev: any) => {
-        // console.log(prev);
+        const p = [...prev];
+        // check if device exsist in list
+        const index = p.findIndex(
+          (f: any) => f['client_id'] === msg['client_id']
+        );
+        // update or add
+        if (index !== -1) {
+          p[index] = msg;
+          return p;
+        }
+
         return [...prev, { ...msg }];
       });
     });
+
+    return () => disconnectSocket();
   }, []);
 
   const actionHandler: any = (props: any) => {

@@ -18,9 +18,12 @@ interface IDevice {
 }
 
 export const initiateSocketConnection = () => {
+  if (!socket) return false;
+
   //   socket = io('https://iotsrv1.egeland.io', {
   //     transports: ['websocket'],
   //   });
+
   socket = io('http://10.0.0.150:5000', {
     transports: ['websocket'],
   });
@@ -28,6 +31,12 @@ export const initiateSocketConnection = () => {
 
 export const subscribeToPing = (clb: ([]) => any) => {
   if (!socket) return true;
+  socket.on('connect', () => {
+    console.log('connected');
+  });
+  socket.on('disconnect', (reason) => {
+    console.log('Disconnected...');
+  });
   socket.on('iotping', (devices: IDevice[]) => {
     // console.log('new message', devices);
     clb(devices);
