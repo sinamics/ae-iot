@@ -16,7 +16,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 type FormData = z.infer<typeof userAuthSchema>;
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function RegisterForm({ className, ...props }: UserAuthFormProps) {
   const {
     register,
     handleSubmit,
@@ -31,14 +31,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
 
     const signInResult: any = await signIn('credentials', {
-      email: 'cbegelan@gmail.com',
-      password: 'test1234kore',
+      email: data.email,
+      password: data.password,
       // redirect: true,
       callbackUrl: searchParams.get('from') || '/iot',
     });
 
     setIsLoading(false);
-    console.log(signInResult);
     if (!signInResult?.ok) {
       return toast({
         title: 'Something went wrong.',

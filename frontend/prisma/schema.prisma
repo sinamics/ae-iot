@@ -49,6 +49,7 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
+  password      String? 
   image         String?
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
@@ -67,3 +68,5 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map(name: "verification_tokens")
 }
+
+// npx prisma migrate dev --name init

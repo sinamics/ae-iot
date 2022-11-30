@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 // import { Client } from 'postmark';
 
@@ -23,52 +24,77 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
   },
   providers: [
-    EmailProvider({
-      server: {
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
-        },
+    CredentialsProvider({
+      // id: 'domain-login',
+      name: 'Agder Energi Varme',
+      async authorize({ email, password }: any, req: any) {
+        const user = await db.user.findFirst({
+          where: {
+            email,
+            password,
+          },
+          // select: {
+          //   emailVerified: true,
+          // },
+        });
+        if (user !== null) {
+          return user;
+        } else {
+          // throw new Error('User does not exists. Please make sure you insert the correct email & password.')
+          return null;
+        }
       },
-      from: process.env.SMTP_FROM,
-      sendVerificationRequest: sendVerificationRequest,
-      // sendVerificationRequest: async ({ identifier, url, provider }) => {
-      //   const user = await db.user.findUnique({
-      //     where: {
-      //       email: identifier,
-      //     },
-      //     select: {
-      //       emailVerified: true,
-      //     },
-      //   });
-
-      //   const result = await postmarkClient.sendEmailWithTemplate({
-      //     TemplateId: user?.emailVerified
-      //       ? POSTMARK_SIGN_IN_TEMPLATE
-      //       : POSTMARK_ACTIVATION_TEMPLATE,
-      //     To: identifier,
-      //     From: provider.from,
-      //     TemplateModel: {
-      //       action_url: url,
-      //       product_name: 'Aeiot',
-      //     },
-      //     Headers: [
-      //       {
-      //         // Set this to prevent Gmail from threading emails.
-      //         // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
-      //         Name: 'X-Entity-Ref-ID',
-      //         Value: new Date().getTime() + '',
-      //       },
-      //     ],
-      //   });
-
-      //   if (result.ErrorCode) {
-      //     throw new Error(result.Message);
-      //   }
-      // },
+      credentials: {
+        email: { label: 'email', type: 'text ', placeholder: 'mail@email.com' },
+        password: { label: 'Password', type: 'password' },
+      },
     }),
+    // EmailProvider({
+    //   server: {
+    //     host: process.env.SMTP_HOST,
+    //     port: Number(process.env.SMTP_PORT),
+    //     auth: {
+    //       user: process.env.SMTP_USER,
+    //       pass: process.env.SMTP_PASSWORD,
+    //     },
+    //   },
+    //   from: process.env.SMTP_FROM,
+    //   sendVerificationRequest: sendVerificationRequest,
+    // sendVerificationRequest: async ({ identifier, url, provider }) => {
+    //   const user = await db.user.findUnique({
+    //     where: {
+    //       email: identifier,
+    //     },
+    //     select: {
+    //       emailVerified: true,
+    //     },
+    //   });
+
+    //   const result = await postmarkClient.sendEmailWithTemplate({
+    //     TemplateId: user?.emailVerified
+    //       ? POSTMARK_SIGN_IN_TEMPLATE
+    //       : POSTMARK_ACTIVATION_TEMPLATE,
+    //     To: identifier,
+    //     From: provider.from,
+    //     TemplateModel: {
+    //       action_url: url,
+    //       product_name: 'Aeiot',
+    //     },
+    //     Headers: [
+    //       {
+    //         // Set this to prevent Gmail from threading emails.
+    //         // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+    //         Name: 'X-Entity-Ref-ID',
+    //         Value: new Date().getTime() + '',
+    //       },
+    //     ],
+    //   });
+
+    //   if (result.ErrorCode) {
+    //     throw new Error(result.Message);
+    //   }
+    // },
+    // }),
   ],
   callbacks: {
     async session({ token, session }: any) {
