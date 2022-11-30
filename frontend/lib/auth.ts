@@ -1,15 +1,15 @@
 import { NextAuthOptions } from 'next-auth';
-import GitHubProvider from 'next-auth/providers/github';
 import EmailProvider from 'next-auth/providers/email';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { Client } from 'postmark';
+// import { Client } from 'postmark';
 
 import { db } from '@/lib/db';
+import { sendVerificationRequest } from './email/verificationRequest';
 
-const postmarkClient = new Client(process.env.POSTMARK_API_TOKEN as string);
+// const postmarkClient = new Client(process.env.POSTMARK_API_TOKEN as string);
 
-const POSTMARK_SIGN_IN_TEMPLATE = 29559329;
-const POSTMARK_ACTIVATION_TEMPLATE = 29559329;
+// const POSTMARK_SIGN_IN_TEMPLATE = 29559329;
+// const POSTMARK_ACTIVATION_TEMPLATE = 29559329;
 
 export const authOptions: NextAuthOptions = {
   // huh any! I know.
@@ -33,40 +33,41 @@ export const authOptions: NextAuthOptions = {
         },
       },
       from: process.env.SMTP_FROM,
-      sendVerificationRequest: async ({ identifier, url, provider }) => {
-        const user = await db.user.findUnique({
-          where: {
-            email: identifier,
-          },
-          select: {
-            emailVerified: true,
-          },
-        });
+      sendVerificationRequest: sendVerificationRequest,
+      // sendVerificationRequest: async ({ identifier, url, provider }) => {
+      //   const user = await db.user.findUnique({
+      //     where: {
+      //       email: identifier,
+      //     },
+      //     select: {
+      //       emailVerified: true,
+      //     },
+      //   });
 
-        const result = await postmarkClient.sendEmailWithTemplate({
-          TemplateId: user?.emailVerified
-            ? POSTMARK_SIGN_IN_TEMPLATE
-            : POSTMARK_ACTIVATION_TEMPLATE,
-          To: identifier,
-          From: provider.from,
-          TemplateModel: {
-            action_url: url,
-            product_name: 'Taxonomy',
-          },
-          Headers: [
-            {
-              // Set this to prevent Gmail from threading emails.
-              // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
-              Name: 'X-Entity-Ref-ID',
-              Value: new Date().getTime() + '',
-            },
-          ],
-        });
+      //   const result = await postmarkClient.sendEmailWithTemplate({
+      //     TemplateId: user?.emailVerified
+      //       ? POSTMARK_SIGN_IN_TEMPLATE
+      //       : POSTMARK_ACTIVATION_TEMPLATE,
+      //     To: identifier,
+      //     From: provider.from,
+      //     TemplateModel: {
+      //       action_url: url,
+      //       product_name: 'Aeiot',
+      //     },
+      //     Headers: [
+      //       {
+      //         // Set this to prevent Gmail from threading emails.
+      //         // See https://stackoverflow.com/questions/23434110/force-emails-not-to-be-grouped-into-conversations/25435722.
+      //         Name: 'X-Entity-Ref-ID',
+      //         Value: new Date().getTime() + '',
+      //       },
+      //     ],
+      //   });
 
-        if (result.ErrorCode) {
-          throw new Error(result.Message);
-        }
-      },
+      //   if (result.ErrorCode) {
+      //     throw new Error(result.Message);
+      //   }
+      // },
     }),
   ],
   callbacks: {

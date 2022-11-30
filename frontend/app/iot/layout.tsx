@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MantineProvider, Footer } from '@mantine/core';
+import { signOut } from 'next-auth/react';
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ export default function IotLayout({ children }: { children: React.ReactNode }) {
         <p className='flex justify-center text-gray-400 mt-2'>
           Clients will report every 5min
         </p>
+        <button onClick={() => signOut()}>Logout</button>
       </header>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>{children}</MantineProvider>

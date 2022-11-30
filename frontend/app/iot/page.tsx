@@ -1,3 +1,6 @@
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/session';
 import DeviceList from './(components)/deviceList';
 export const SERVER_URL = 'https://iotsrv1.egeland.io';
 interface IDevice {
@@ -16,6 +19,12 @@ interface IDevice {
 }
 
 async function fetchData() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(authOptions.pages?.signIn || '/login');
+  }
+
   const res = await fetch(`${SERVER_URL}/devices`, { cache: 'no-store' });
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.

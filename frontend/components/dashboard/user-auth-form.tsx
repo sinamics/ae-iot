@@ -30,10 +30,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult = await signIn('email', {
+    const signInResult: any = await signIn('email', {
       email: data.email.toLowerCase(),
-      redirect: false,
-      callbackUrl: searchParams.get('from') || '/dashboard',
+      redirect: true,
+      callbackUrl: searchParams.get('from') || '/iot',
     });
 
     setIsLoading(false);
@@ -69,9 +69,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoCapitalize='none'
               autoComplete='email'
               autoCorrect='off'
-              name='email'
               disabled={isLoading}
               {...register('email')}
+              name='email'
             />
             {errors?.email && (
               <p className='px-1 text-xs text-red-600'>
