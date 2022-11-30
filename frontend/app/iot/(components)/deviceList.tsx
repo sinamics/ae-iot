@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import TimeAgo from 'react-timeago';
-import { Dropdown } from '../components/dropdown';
+import {
+  initiateSocketConnection,
+  subscribeToPing,
+} from '../../../service/socket';
+import { Dropdown } from '@/components/dropdown';
 
-// const SERVER_URL = 'http://10.0.0.150:5001';
-const SERVER_URL = 'https://iotsrv1.egeland.io';
-
-const socket = io(SERVER_URL, { transports: ['websocket'] });
+// const SERVER_URL = 'http://10.0.0.150:5000';
+export const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 interface IDevice {
   available: boolean;
@@ -26,11 +28,6 @@ interface IDevice {
   uptime: string;
 }
 
-const fetchData = async () => {
-  const response = await fetch(`${SERVER_URL}/devices`, { cache: 'no-cache' });
-  return response.json();
-};
-
 const postData = async (data: any) => {
   const response = await fetch(`${SERVER_URL}/action`, {
     method: 'POST',
@@ -45,31 +42,18 @@ const postData = async (data: any) => {
   return response.json();
 };
 
-const Iot = () => {
+const DeviceList = ({ devices }: { devices: IDevice[] }) => {
   // const [isConnected, setIsConnected] = useState(socket.connected);
-  const [iotDevices, setIotDevices] = useState<any>([]);
+  const [iotDevices, setIotDevices] = useState<any>(devices);
 
-  const { isLoading, data: devices } = useQuery({
-    queryKey: ['devices'],
-    queryFn: fetchData,
-  });
   const { mutate, isLoading: postLoading } = useMutation(postData, {
     networkMode: 'online',
   });
 
   useEffect(() => {
-    // socket.on('connect', () => {
-    //   console.log('websocket connected');
-    //   setIsConnected(true);
-    // });
+    initiateSocketConnection();
 
-    // socket.on('disconnect', () => {
-    //   setIsConnected(false);
-    // });
-
-    socket.on('iotping', (devices) => {
-      // console.log('new message', devices);
-
+    subscribeToPing((devices: any) => {
       const msg: IDevice = JSON.parse(devices);
       const dev = [...iotDevices];
       // check if device exsist in list
@@ -87,29 +71,13 @@ const Iot = () => {
         return [...prev, { ...msg }];
       });
     });
-
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('iotping');
-    };
-  }, [iotDevices]);
+  }, []);
 
   const actionHandler: any = (props: any) => {
     mutate({ ...props });
   };
 
-  useEffect(() => {
-    if (!devices?.length) return;
-    setIotDevices(devices);
-  }, [devices]);
-
-  if (isLoading)
-    return (
-      <div className='flex justify-center text-2xl '>
-        Loading IoT devices, please wait!
-      </div>
-    );
+  console.log(iotDevices);
 
   return (
     <div className='flex justify-center flex-wrap w-full'>
@@ -174,4 +142,4 @@ const Iot = () => {
   );
 };
 
-export default Iot;
+export default DeviceList;
