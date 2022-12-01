@@ -2,7 +2,6 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MantineProvider, Footer } from '@mantine/core';
-import { Nav } from '@/components/navbar';
 import { Vertical } from '@/components/vertical';
 
 const queryClient = new QueryClient();
