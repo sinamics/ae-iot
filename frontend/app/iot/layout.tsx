@@ -2,13 +2,15 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MantineProvider, Footer } from '@mantine/core';
-import { signOut } from 'next-auth/react';
+import { Nav } from '@/components/navbar';
+import { Vertical } from '@/components/vertical';
 
 const queryClient = new QueryClient();
 
 export default function IotLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      {/* <Nav /> */}
       <header className='pt-10'>
         <h1 className='flex justify-center  text-3xl sm:text-4xl lg:text-6xl '>
           IoT Dashboard
@@ -16,11 +18,11 @@ export default function IotLayout({ children }: { children: React.ReactNode }) {
         <p className='flex justify-center text-gray-400 mt-2'>
           Clients will report every 5min
         </p>
-        <button onClick={() => signOut()}>Logout</button>
       </header>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>{children}</MantineProvider>
       </QueryClientProvider>
+      <Vertical />
 
       <footer className='hidden absolute bottom-0 w-full p-4 shadow md:flex md:items-center md:justify-between md:p-6 bg-[rgb(54,58,63)]'>
         <span className='text-sm sm:text-center text-gray-400'>

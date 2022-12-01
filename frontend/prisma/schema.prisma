@@ -69,4 +69,5 @@ model VerificationToken {
   @@map(name: "verification_tokens")
 }
 
+// npm run prisma-build
 // npx prisma migrate dev --name init

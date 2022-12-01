@@ -42,10 +42,7 @@ export const authOptions: NextAuthOptions = {
         if (!user || !user.password) {
           return null;
         }
-        console.log(user);
-        console.log(password);
         const isValidPassword = bcrypt.compareSync(password, user.password);
-        console.log(isValidPassword);
         if (!isValidPassword) {
           return null;
         }

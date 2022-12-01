@@ -29,6 +29,7 @@
     "bcryptjs": "^2.4.3",
     "bufferutil": "^4.0.7",
     "clsx": "^1.2.1",
+    "daisyui": "^2.42.1",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.5",
     "next": "13.0.6-canary.2",
