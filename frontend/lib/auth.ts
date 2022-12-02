@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   pages: {
-    signIn: '/login',
+    signIn: '/',
   },
   providers: [
     CredentialsProvider({
@@ -40,11 +40,11 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          return null;
+          throw new Error('Wrong username or password!');
         }
         const isValidPassword = bcrypt.compareSync(password, user.password);
         if (!isValidPassword) {
-          return null;
+          throw new Error('Wrong username or password!');
         }
         return {
           id: user.id,

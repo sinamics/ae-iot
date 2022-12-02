@@ -1,16 +1,17 @@
 'use client';
 
-import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
+import { FaSpinner } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { userAuthSchema } from '@/lib/validations/auth';
 import { toast } from '@/ui/toast';
-// import { Icons } from '@/components/icons';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Icons } from '@/components/icons';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -24,34 +25,33 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
   } = useForm<FormData>({
     resolver: zodResolver(userAuthSchema),
   });
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState(String);
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   async function onSubmit(data: FormData) {
+    setError('');
     setIsLoading(true);
 
     const signInResult: any = await signIn('credentials', {
       email: data.email,
       password: data.password,
-      // redirect: true,
+      redirect: false,
       callbackUrl: searchParams.get('from') || '/iot',
     });
 
-    setIsLoading(false);
-
     if (!signInResult?.ok) {
+      setIsLoading(false);
+      setError(signInResult?.error);
       return toast({
-        title: 'Something went wrong.',
-        message: 'Your sign in request failed. Please try again.',
+        // title: signInResult?.error,
+        message: signInResult?.error,
         type: 'error',
       });
     }
 
-    return toast({
-      title: 'Check your email',
-      message: 'We sent you a login link. Be sure to check your spam too.',
-      type: 'success',
-    });
+    router.push('/iot');
   }
 
   return (
@@ -107,11 +107,11 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
             disabled={isLoading}
           >
             {isLoading && (
-              //   <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
-              <div>Loading</div>
+              <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
             )}
             Sign In
           </button>
+          {error ? <p className='text-center text-red-500'>{error}</p> : null}
         </div>
       </form>
     </div>

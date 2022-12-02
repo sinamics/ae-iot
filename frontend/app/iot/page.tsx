@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/lib/session';
 // import DeviceList from './(components)/deviceList';
 import IotTable from './(components)/table';
 import Header from './(components)/header';
+
 export const SERVER_URL = 'https://iotsrv1.egeland.io';
 interface IDevice {
   available: boolean;
@@ -22,9 +23,8 @@ interface IDevice {
 
 async function fetchData() {
   const user = await getCurrentUser();
-
   if (!user) {
-    redirect(authOptions.pages?.signIn || '/login');
+    redirect(authOptions.pages?.signIn || '/');
   }
 
   const res = await fetch(`${SERVER_URL}/devices`, { cache: 'no-store' });
@@ -42,6 +42,7 @@ async function fetchData() {
 
 const Iot = async () => {
   const devices: IDevice[] = await fetchData();
+
   return (
     <div>
       {/* <DeviceList devices={devices} /> */}
