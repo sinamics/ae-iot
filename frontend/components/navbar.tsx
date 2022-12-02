@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export const Vertical = () => {
   const { data: session, status } = useSession();
   let menuArray = [true, false, false];
   const [menu, setMenu] = useState(menuArray);
   const [show, setShow] = useState(true);
+
+  const router = useRouter();
 
   const setMenuValue = (props: any) => {
     let newArr = [...menu];
@@ -124,7 +127,10 @@ export const Vertical = () => {
           <p className='text-2xl leading-6 text-white'>AE Varme</p>
         </div>
         <div className='mt-6 flex flex-col justify-start items-center  pl-4 w-full border-gray-600 border-b space-y-3 pb-5 '>
-          <button className='flex jusitfy-start items-center space-x-6 w-full  focus:outline-none  focus:text-indigo-400  text-white rounded '>
+          <button
+            onClick={() => router.push('/iot')}
+            className='flex jusitfy-start items-center space-x-6 w-full  focus:outline-none  focus:text-indigo-400  text-white rounded '
+          >
             <svg
               className='fill-stroke '
               width={24}

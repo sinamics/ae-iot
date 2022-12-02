@@ -22,7 +22,7 @@ export default function IotLayout({
           <QueryClientProvider client={queryClient}>
             <MantineProvider>{children}</MantineProvider>
           </QueryClientProvider>
-          <footer className='hidden absolute bottom-0 w-full p-4 shadow md:flex md:items-center md:justify-between md:p-4 bg-[rgb(54,58,63)]'>
+          <footer className='hidden absolute bottom-0 w-full p-4 shadow md:flex md:items-center md:justify-between md:p-6 bg-[rgb(54,58,63)]'>
             <span className='text-sm sm:text-center text-gray-400'>
               © 2022{' '}
               <a href='https://linkme.egeland.io' className='hover:underline'>

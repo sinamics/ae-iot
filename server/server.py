@@ -71,6 +71,22 @@ class Server():
 
             return json.dumps(devices_arr)
 
+        # Route for seeing a data
+        @app.route('/deviceById')
+        def devices():
+            device = request.get_json()
+            node = self.r.get(device)          
+            try:
+                json.loads(node)
+            except:
+                print("Error:: not json data!")
+                pass
+               
+            if app.debug:
+                pprint(device)
+
+            return json.dumps(device)
+            
         # Handle the webapp connecting to the websocket
         @socketio.on('connect')
         def test_connect(self):
