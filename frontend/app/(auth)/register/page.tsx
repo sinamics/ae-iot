@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 // import { Icons } from '@/components/icons';
-import { RegisterForm } from '@/components/dashboard/register-form';
+import { RegisterForm } from '@/components/auth/register-form';
 
 export default function RegisterPage() {
   return (

@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
 import { getCurrentUser } from '@/lib/session';
-import DeviceList from './(components)/deviceList';
+// import DeviceList from './(components)/deviceList';
 import IotTable from './(components)/table';
+import Header from './(components)/header';
 export const SERVER_URL = 'https://iotsrv1.egeland.io';
 interface IDevice {
   available: boolean;
@@ -44,7 +45,8 @@ const Iot = async () => {
   return (
     <div>
       {/* <DeviceList devices={devices} /> */}
-      <IotTable devices={devices} />
+      <Header />
+      <IotTable data={devices} />
     </div>
   );
 };

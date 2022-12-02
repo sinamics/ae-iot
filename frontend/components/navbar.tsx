@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export const Vertical = () => {
+  const { data: session, status } = useSession();
   let menuArray = [true, false, false];
   const [menu, setMenu] = useState(menuArray);
   const [show, setShow] = useState(true);
@@ -11,7 +12,6 @@ export const Vertical = () => {
     newArr[props] = !newArr[props];
     setMenu(newArr);
   };
-
   return (
     <div className='h-full'>
       <div className='rounded-r bg-gray-900 xl:hidden flex justify-between w-full p-6 items-center '>
@@ -949,19 +949,12 @@ export const Vertical = () => {
           </div>
           <div className=' flex justify-between items-center w-full'>
             <div className='flex justify-center items-center  space-x-2'>
-              <div>
-                <img
-                  className='rounded-full'
-                  src='https://i.ibb.co/L1LQtBm/Ellipse-1.png'
-                  alt='avatar'
-                />
-              </div>
               <div className='flex justify-start flex-col items-start'>
-                <p className='cursor-pointer text-sm leading-5 text-white'>
+                {/* <p className='cursor-pointer text-sm leading-5 text-white'>
                   Alexis Enache
-                </p>
-                <p className='cursor-pointer text-xs leading-3 text-gray-300'>
-                  alexis81@gmail.com
+                </p> */}
+                <p className='cursor-pointer text-sm leading-3 text-gray-300'>
+                  {status === 'authenticated' ? session?.user?.email : null}
                 </p>
               </div>
             </div>

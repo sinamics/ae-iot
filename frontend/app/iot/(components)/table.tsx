@@ -74,10 +74,8 @@ const columns = [
   }),
 ];
 
-const IotTable = ({ devices: data }: any) => {
-  //   const [data, setData] = useState(() => [...devices]);
+const IotTable = ({ data }: { data: IDevice[] }) => {
   const router = useRouter();
-
   const table = useReactTable({
     data,
     columns,

@@ -1,20 +1,20 @@
 'use client';
+import { Button } from '@mantine/core';
 import Link from 'next/link';
 import React from 'react';
+import { SliderSetpoint } from './(components)/slider';
 
-export default function Device(props: any) {
-  console.log(props);
+export default function Device({ params }: any) {
+  console.log(params);
   return (
-    <div>
-      <Link
-        href='/iot'
-        className='absolute top-4 left-4 inline-flex items-center justify-center rounded-lg border border-transparent bg-transparent py-2 px-3 text-center text-sm  font-medium text-slate-900 hover:border-slate-200 hover:bg-slate-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-slate-200 md:top-8 md:left-8'
-      >
-        <>
-          {/* <Icons.chevronLeft className='mr-2 h-4 w-4' /> */}
-          Back
-        </>
-      </Link>
+    <div className='container pt-20 grid grid-cols-3'>
+      <div className='col-span-3 text-center text-2xl'>{params.id}</div>
+      <div className='col-start-2'>
+        <div className='mb-3'>
+          <p>Set temperature setpoint</p>
+        </div>
+        <SliderSetpoint />
+      </div>
     </div>
   );
 }
