@@ -13,7 +13,7 @@ export const Vertical = () => {
   };
 
   return (
-    <div className=' '>
+    <div className='h-full'>
       <div className='rounded-r bg-gray-900 xl:hidden flex justify-between w-full p-6 items-center '>
         <div className='flex justify-between  items-center space-x-3'>
           <svg
