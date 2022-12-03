@@ -32,6 +32,7 @@
     "clsx": "^1.2.1",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.6",
+    "ioredis": "^5.2.4",
     "lucide-react": "^0.103.0",
     "mqtt": "^4.3.7",
     "next": "13.0.7-canary.0",
