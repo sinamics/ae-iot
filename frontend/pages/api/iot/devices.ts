@@ -4,38 +4,8 @@ import { authOptions } from '@/lib/auth';
 import RedisConnect from '@/lib/redis';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-let redis = RedisConnect();
-
-const mqtt = MqttConnect();
-const clients = ['iot-rpios-100', 'iot-rpios-101'];
-
-const topic = '/nodejs/mqtt';
-mqtt.on('connect', () => {
-  console.log('Connected');
-  clients.forEach((client) => {
-    mqtt.subscribe(`iot/device/${client}`, (err, granted) => {
-      if (err) {
-        console.log(err, 'err');
-      }
-      console.log(granted, 'granted');
-      console.log(`Subscribe to topic '${client}'`);
-    });
-  });
-});
-mqtt.on('connect', () => {
-  console.log('Connected again');
-});
-mqtt.on('message', function (topic, message) {
-  console.log(
-    'Received message ' + message.toString() + ' on topic: ' + topic.toString()
-  );
-});
-
-mqtt.on('close', function () {
-  console.log('Connection closed by client');
-  mqtt.unsubscribe([topic]);
-  mqtt.end();
-});
+const redis = RedisConnect();
+MqttConnect();
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,11 +21,32 @@ export default async function handler(
 
   switch (req.method) {
     case 'GET':
-      const value = await redis.get('iot-rpios-100');
-      res.status(200).json({ value });
+      const redisResult = new Set();
+      const all = await redis.scan('0', 'MATCH', 'iot*');
+      for (let x = 0; x < all[1].length; x++) {
+        redisResult.add(await redis.get(all[1][x]));
+      }
+
+      res.status(200).json(Array.from(redisResult));
+      break;
+
+    case 'POST':
+      const query = req.body;
+      if ('client_id'! in query)
+        return res.status(400).json({ status: 'client id not provided' });
+
+      res.status(200).json(await redis.get(query.client_id));
 
       break;
 
+    case 'PUT':
+      const value = req.body;
+      if ('client_id'! in value || 'value'! in value)
+        return res.status(400).json({ status: 'client id not provided' });
+
+      await redis.put(query.client_id, query.value);
+
+      break;
     default:
       res.status(400).json({ status: 'not ok' });
       break;
