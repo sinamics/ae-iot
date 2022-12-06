@@ -1,15 +1,14 @@
 import { authOptions } from '@/lib/auth';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
-import { MqttConnect } from '@/lib/mqtt';
+import { Mqtt } from '@/lib/mqtt';
 
-const mqtt = MqttConnect();
+const mqtt = new Mqtt();
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   // send mqtt message with action to devices
-  //   self.mq.publish("iot/subscribe/{}".format(data["client_id"]), json.dumps(data))
   const session = await unstable_getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -20,7 +19,6 @@ export default async function handler(
   }
 
   const query = req.body;
-
   if (!query.hasOwnProperty('client_id'))
     return res.status(400).json({ status: 'client id not provided' });
 

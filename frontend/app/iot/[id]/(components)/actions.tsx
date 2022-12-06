@@ -36,7 +36,7 @@ export default function DeviceAction({ data }: any) {
   //   if (error instanceof Error) {
   //     return <span>Error: {error?.message}</span>;
   //   }
-
+  console.log(error);
   const actionHandler = (action: any) => {
     setDispatch({ type: action, loading: true });
     mutate({ ...action });
@@ -60,7 +60,12 @@ export default function DeviceAction({ data }: any) {
                 },
               })
             }
-            className={`w-1/3 uppercase rounded-l inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out`}
+            className={`w-1/3 uppercase rounded-l inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
+            ${
+              data?.operational_mode === 'electric'
+                ? 'border-slate-400 bg-slate-900'
+                : ''
+            }`}
           >
             <div className='flex items-center justify-center'>
               {dispatch.type === 'electric' && dispatch.loading && (
@@ -117,7 +122,12 @@ export default function DeviceAction({ data }: any) {
               })
             }
             disabled={dispatch.loading}
-            className={`w-1/3 uppercase rounded-r inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out`}
+            className={`w-1/3 uppercase rounded-r inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
+            ${
+              data?.operational_mode === 'fuel'
+                ? 'border-slate-400 bg-slate-900'
+                : ''
+            }`}
           >
             <div className='flex items-center justify-center'>
               {dispatch.type === 'fuel' && dispatch.loading && (

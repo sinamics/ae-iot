@@ -1,11 +1,10 @@
-import { MqttConnect } from '@/lib/mqtt';
+// import { MqttConnect } from '@/lib/mqtt';
 import { unstable_getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import RedisConnect from '@/lib/redis';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const redis = RedisConnect();
-MqttConnect();
 
 export default async function handler(
   req: NextApiRequest,

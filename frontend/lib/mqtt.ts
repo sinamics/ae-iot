@@ -45,8 +45,8 @@ export class Mqtt {
     this.mqtt_client.on('message', function (topic: any, message: any) {
       const msg = JSON.parse(message.toString('utf8'));
       if (!('client_id' in msg)) return console.log('invalid mqtt message!');
-      callback(msg);
       console.log('Received message on topic: ' + topic);
+      callback(msg);
     });
   }
   subscribe() {
@@ -62,6 +62,9 @@ export class Mqtt {
         }
       );
     });
+  }
+  publish(topic: string, message: string) {
+    return this.mqtt_client.publish(topic, message);
   }
   un_subscribe() {
     let client = this.mqtt_client;

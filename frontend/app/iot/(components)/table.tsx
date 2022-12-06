@@ -98,9 +98,9 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    // debugTable: true,
+    // debugHeaders: true,
+    // debugColumns: true,
   });
 
   useEffect(() => {
@@ -122,6 +122,10 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
       });
       console.log('new socket message', msg);
     });
+
+    return () => {
+      socket?.off('iotping');
+    };
   }, [socket]);
 
   return (

@@ -3,12 +3,11 @@
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
 import TimeAgo from 'react-timeago';
-import { useMutation, useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import { SliderSetpoint } from './(components)/slider';
-import { Icons } from '@/components/icons';
 import DeviceAction from './(components)/actions';
+import { useSocket } from '@/hooks/useSocket';
 
 const postData: any = async (client_id: string) => {
   const response = await fetch(`${SERVER_URL}/api/iot/devices`, {
@@ -25,9 +24,9 @@ const postData: any = async (client_id: string) => {
 };
 
 export default function DeviceById({ params }: any) {
-  const [dispatch, setDispatch] = useState({ type: '', loading: false });
+  const [tableData, setTableData] = useState<any>();
   const { status: userLoading } = useSession({ required: true });
-
+  const socket = useSocket('/api/socketio');
   const {
     mutate,
     isLoading: postLoading,
@@ -38,8 +37,24 @@ export default function DeviceById({ params }: any) {
   });
 
   useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
+  useEffect(() => {
     mutate(params.id);
   }, [params, mutate]);
+
+  useEffect(() => {
+    socket?.on('iotping', (devices: any) => {
+      const msg: IDevice = JSON.parse(devices);
+      setTableData((prev: any) => ({ ...prev, ...msg }));
+      console.log('new socket message', msg);
+    });
+
+    return () => {
+      socket?.off('iotping');
+    };
+  }, [socket, data]);
 
   if (userLoading === 'loading' || postLoading) {
     return (
@@ -52,14 +67,10 @@ export default function DeviceById({ params }: any) {
     return <span>Error: {error?.message}</span>;
   }
 
-  const actionHandler = (action: any) => {
-    setDispatch({ type: action, loading: true });
-  };
-
   return (
     <div className='container pt-20 grid grid-cols-3'>
       <div className='col-span-3 text-center text-4xl p-12'>
-        {data?.friendly_name}
+        {tableData?.friendly_name}
       </div>
       <div className='col-start-2'>
         <div className='flex items-center justify-between'>
@@ -69,7 +80,7 @@ export default function DeviceById({ params }: any) {
           >
             Name
           </label>
-          <label>{data?.friendly_name}</label>
+          <label>{tableData?.friendly_name}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -78,7 +89,7 @@ export default function DeviceById({ params }: any) {
           >
             Client ID
           </label>
-          <label>{data?.client_id}</label>
+          <label>{tableData?.client_id}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -88,7 +99,7 @@ export default function DeviceById({ params }: any) {
             Lastseen
           </label>
           <label>
-            <TimeAgo date={new Date(data?.datetime || 0)} />
+            <TimeAgo date={new Date(tableData?.datetime || 0)} />
           </label>
         </div>
         <div className='flex items-center justify-between'>
@@ -98,7 +109,7 @@ export default function DeviceById({ params }: any) {
           >
             Uptime
           </label>
-          <label>{data?.uptime}</label>
+          <label>{tableData?.uptime}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -107,7 +118,7 @@ export default function DeviceById({ params }: any) {
           >
             Heater
           </label>
-          <label>{data?.heater}</label>
+          <label>{tableData?.heater}</label>
         </div>
         <div className='flex items-center justify-between mb-6'>
           <label
@@ -116,12 +127,12 @@ export default function DeviceById({ params }: any) {
           >
             Operational Mode
           </label>
-          <label>{data?.operational_mode}</label>
+          <label>{tableData?.operational_mode}</label>
         </div>
         <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
-          <p>Operational Mode ({data?.operational_mode})</p>
+          <p>Operational Mode ({tableData?.operational_mode})</p>
         </div>
-        <DeviceAction data={data} />
+        <DeviceAction data={tableData} />
       </div>
     </div>
   );
