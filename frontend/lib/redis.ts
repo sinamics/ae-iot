@@ -8,8 +8,8 @@ export const RedisConnect = () => {
   }
 
   redis = new Redis({
-    port: 49154,
-    host: '10.0.0.150',
+    port: 6379,
+    host: '127.0.0.1',
     db: 0,
   });
 

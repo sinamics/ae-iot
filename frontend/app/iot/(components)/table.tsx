@@ -8,6 +8,8 @@ import {
 } from '@tanstack/react-table';
 import TimeAgo from 'react-timeago';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useSocket } from '@/hooks/useSocket';
 
 type Person = {
   firstName: string;
@@ -33,6 +35,15 @@ type IDevice = {
   uptime: string;
 };
 
+const formatter: any = (
+  value: any,
+  unit: any,
+  suffix: any,
+  nextFormatter: any
+) => {
+  return `${value} ${unit}`;
+};
+
 const columnHelper = createColumnHelper<IDevice>();
 
 const columns = [
@@ -47,7 +58,10 @@ const columns = [
   columnHelper.accessor((row) => row.datetime, {
     header: () => 'Lastseen',
     id: 'datetime',
-    cell: (info) => <TimeAgo date={info.getValue()} />,
+    size: 150,
+    cell: (info) => (
+      <TimeAgo date={info.getValue()} live={true} formatter={formatter} />
+    ),
     // footer: (info) => info.column.id,
   }),
   columnHelper.accessor('electric_price', {
@@ -75,12 +89,40 @@ const columns = [
 ];
 
 const IotTable = ({ data }: { data: IDevice[] }) => {
+  const [tableData, setTableData] = useState(data);
+
+  const socket = useSocket('/api/socketio');
   const router = useRouter();
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
   });
+
+  useEffect(() => {
+    socket?.on('iotping', (devices: any) => {
+      const msg: IDevice = JSON.parse(devices);
+      setTableData((prev: any) => {
+        const p = [...prev];
+        // check if device exsist in list
+        const index: any = p.findIndex(
+          (f: any) => f['client_id'] === msg['client_id']
+        );
+        // update or add
+        if (index !== -1) {
+          p[index] = msg;
+          return p;
+        }
+
+        return [...prev, { ...msg }];
+      });
+      console.log('new socket message', msg);
+    });
+  }, [socket]);
 
   return (
     <div className='p-2'>
@@ -89,7 +131,14 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  {...{
+                    style: {
+                      width: header.getSize(),
+                    },
+                  }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(

@@ -4,11 +4,7 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import TimeAgo from 'react-timeago';
-import {
-  disconnectSocket,
-  initiateSocketConnection,
-  subscribeToPing,
-} from '../../../service/socket';
+import { disconnectSocket, subscribeToPing } from '../../../service/socket';
 import { Dropdown } from '@/components/dropdown';
 
 // const SERVER_URL = 'http://10.0.0.150:5000';
@@ -52,7 +48,7 @@ const DeviceList = ({ devices }: { devices: IDevice[] }) => {
   });
 
   useEffect(() => {
-    initiateSocketConnection();
+    // initiateSocketConnection();
 
     subscribeToPing((devices: any) => {
       const msg: IDevice = JSON.parse(devices);

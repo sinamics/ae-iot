@@ -6,6 +6,7 @@ import { Vertical } from '@/components/navbar';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { Footer } from '@/components/footer';
+// import { subscribeToPing } from 'service/socket';
 
 const queryClient = new QueryClient();
 
@@ -15,12 +16,6 @@ interface DashboardLayoutProps {
 }
 
 export default function Wrapper({ children, session }: DashboardLayoutProps) {
-  // const user = await getCurrentUser();
-
-  // if (!user) {
-  //   return notFound();
-  // }
-
   return (
     <SessionProvider session={session}>
       <div className='flex h-screen'>

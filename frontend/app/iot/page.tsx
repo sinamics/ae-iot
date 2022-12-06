@@ -1,7 +1,3 @@
-import { redirect } from 'next/navigation';
-import { authOptions } from '@/lib/auth';
-import { getCurrentUser } from '@/lib/session';
-// import DeviceList from './(components)/deviceList';
 import IotTable from './(components)/table';
 import Header from './(components)/header';
 

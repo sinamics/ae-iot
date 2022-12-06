@@ -1,3 +1,4 @@
+import { SERVER_URL } from '@/lib/config';
 import io, { Socket } from 'socket.io-client';
 
 let socket: Socket;
@@ -16,18 +17,6 @@ interface IDevice {
   system: string;
   uptime: string;
 }
-
-export const initiateSocketConnection = () => {
-  if (!socket) return false;
-
-  //   socket = io('https://iotsrv1.egeland.io', {
-  //     transports: ['websocket'],
-  //   });
-
-  socket = io('http://10.0.0.150:5000', {
-    transports: ['websocket'],
-  });
-};
 
 export const subscribeToPing = (clb: ([]) => any) => {
   if (!socket) return true;
