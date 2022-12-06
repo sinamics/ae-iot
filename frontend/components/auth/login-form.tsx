@@ -5,7 +5,6 @@ import { signIn } from 'next-auth/react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FaSpinner } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { userAuthSchema } from '@/lib/validations/auth';
 import { toast } from '@/ui/toast';

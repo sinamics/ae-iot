@@ -12,6 +12,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const session = await unstable_getServerSession(req, res, authOptions);
+
   if (!session) {
     return res.send({
       error:
@@ -32,10 +33,11 @@ export default async function handler(
 
     case 'POST':
       const query = req.body;
-      if ('client_id'! in query)
+
+      if (!query.hasOwnProperty('client_id'))
         return res.status(400).json({ status: 'client id not provided' });
 
-      res.status(200).json(await redis.get(query.client_id));
+      res.status(200).json(JSON.parse(await redis.get(query.client_id)));
 
       break;
 

@@ -1,5 +1,5 @@
 import { NextAuthOptions } from 'next-auth';
-import EmailProvider from 'next-auth/providers/email';
+// import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import bcrypt from 'bcryptjs';
@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 // import { Client } from 'postmark';
 
 import { db } from '@/lib/db';
-import { sendVerificationRequest } from './email/verificationRequest';
+// import { sendVerificationRequest } from './email/verificationRequest';
 
 // const postmarkClient = new Client(process.env.POSTMARK_API_TOKEN as string);
 

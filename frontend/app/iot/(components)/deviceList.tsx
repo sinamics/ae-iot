@@ -12,7 +12,7 @@ import {
 import { Dropdown } from '@/components/dropdown';
 
 // const SERVER_URL = 'http://10.0.0.150:5000';
-export const SERVER_URL = 'https://iotsrv1.egeland.io';
+const SERVER_URL = 'https://iotsrv1.egeland.io';
 
 interface IDevice {
   available: boolean;

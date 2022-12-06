@@ -5,43 +5,21 @@ import { getCurrentUser } from '@/lib/session';
 import IotTable from './(components)/table';
 import Header from './(components)/header';
 
-export const SERVER_URL = 'https://iotsrv1.egeland.io';
-interface IDevice {
-  available: boolean;
-  datetime: string;
-  electric_price: number;
-  electric_time_to_start: string;
-  friendly_name: string;
-  fuel_price: number;
-  fuel_time_to_start: string;
-  heater: string;
-  client_id: string;
-  operational_mode: string;
-  system: string;
-  uptime: string;
-}
+import { IDevice } from '@/lib/types';
+import RedisConnect from '@/lib/redis';
+const redis = RedisConnect();
 
-async function fetchData() {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect(authOptions.pages?.signIn || '/');
+const devicesInDatabase = async () => {
+  const redisResult: any = new Set<IDevice[]>();
+  const all = await redis.scan('0', 'MATCH', 'iot*');
+  for (let x = 0; x < all[1].length; x++) {
+    redisResult.add(JSON.parse(await redis.get(all[1][x])));
   }
-
-  const res = await fetch(`${SERVER_URL}/devices`, { cache: 'no-store' });
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
-
-  // Recommendation: handle errors
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error('Failed to fetch data');
-  }
-
-  return res.json();
-}
+  return [...redisResult];
+};
 
 const Iot = async () => {
-  const devices: IDevice[] = await fetchData();
+  const devices: any = await devicesInDatabase();
 
   return (
     <div>

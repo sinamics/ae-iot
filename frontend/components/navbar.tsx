@@ -110,7 +110,7 @@ export const Vertical = () => {
         id='Main'
         className={`${
           show ? 'translate-x-0' : '-translate-x-full'
-        } xl:rounded-r transform  xl:translate-x-0  ease-in-out transition duration-500 flex justify-start items-start h-full  w-full sm:w-64 bg-gray-900 flex-col`}
+        }  transform  xl:translate-x-0  ease-in-out transition duration-500 flex justify-start items-start h-full  w-full sm:w-64 bg-gray-900 flex-col`}
       >
         <div className='hidden xl:flex justify-start p-6 items-center space-x-3'>
           <svg
