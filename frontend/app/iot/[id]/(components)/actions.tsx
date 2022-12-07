@@ -7,10 +7,10 @@ import React, { useState } from 'react';
 import { SliderSetpoint } from '../(components)/slider';
 import { Icons } from '@/components/icons';
 
-const postData: any = async ({ client_id, action }: any) => {
+const postActions: any = async ({ client_id, action }: any) => {
   const response = await fetch(`${SERVER_URL}/api/iot/action`, {
     method: 'POST',
-    cache: 'no-cache',
+    cache: 'no-store',
     credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
@@ -24,23 +24,25 @@ const postData: any = async ({ client_id, action }: any) => {
 export default function DeviceAction({ data }: any) {
   const [dispatch, setDispatch] = useState({ type: '', loading: false });
 
-  const {
-    mutate,
-    isLoading: postLoading,
-    data: response,
-    error,
-  } = useMutation<IDevice>(postData, {
+  const mutation = useMutation<IDevice>(postActions, {
     networkMode: 'online',
+    onSuccess: () => {
+      setDispatch((prev: any) => ({ ...prev, loading: false }));
+    },
   });
 
-  //   if (error instanceof Error) {
-  //     return <span>Error: {error?.message}</span>;
-  //   }
-  console.log(error);
+  if (mutation.isError && mutation.error instanceof Error) {
+    return <span>Error: {mutation.error?.message}</span>;
+  }
+
   const actionHandler = (action: any) => {
-    setDispatch({ type: action, loading: true });
-    mutate({ ...action });
+    // setDispatch({ type: action, loading: true });
+    mutation.mutate({ ...action });
   };
+
+  if (mutation.isLoading) {
+    return <div>Loading actions...</div>;
+  }
 
   return (
     <>
@@ -145,7 +147,7 @@ export default function DeviceAction({ data }: any) {
         </div>
       </div>
       <div className='mb-3 mt-10 flex items-center justify-center uppercase'>
-        <p>Temperature setpoint</p>
+        <p>Temperature setpoint ( disabled! )</p>
       </div>
       <SliderSetpoint />
       <div className='pt-20'>

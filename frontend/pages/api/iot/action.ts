@@ -1,9 +1,8 @@
 import { authOptions } from '@/lib/auth';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
-import { Mqtt } from '@/lib/mqtt';
+import mqtt from '@/lib/mqtt';
 
-const mqtt = new Mqtt();
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -27,10 +26,12 @@ export default async function handler(
   try {
     const response = mqtt.publish(
       `iot/subscribe/${client_id}`,
-      JSON.stringify({ ...action })
+      JSON.stringify({ ...query.action })
     );
+
     res.status(200).json(response);
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 }

@@ -30,6 +30,7 @@ export function SliderSetpoint() {
   const { classes } = useStyles();
   return (
     <Slider
+      disabled
       labelAlwaysOn
       min={10}
       max={90}

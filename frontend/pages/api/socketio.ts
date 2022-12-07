@@ -1,11 +1,11 @@
 import { NextApiRequest } from 'next';
 import { Server as ServerIO } from 'socket.io';
 import { Server as NetServer } from 'http';
-import { Mqtt } from '@/lib/mqtt';
+import mqtt from '@/lib/mqtt';
 import RedisConnect from '@/lib/redis';
 
 const redis = RedisConnect();
-const mqtt = new Mqtt();
+// const mqtt = new Mqtt();
 
 const mqListner = (io: any) => {
   mqtt.message((msg: any) => {

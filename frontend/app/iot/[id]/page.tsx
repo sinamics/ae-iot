@@ -26,6 +26,7 @@ const postData: any = async (client_id: string) => {
 export default function DeviceById({ params }: any) {
   const [tableData, setTableData] = useState<any>();
   const { status: userLoading } = useSession({ required: true });
+
   const socket = useSocket('/api/socketio');
   const {
     mutate,
@@ -47,6 +48,16 @@ export default function DeviceById({ params }: any) {
   useEffect(() => {
     socket?.on('iotping', (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
+      console.log(msg);
+      if (
+        !devices ||
+        !devices.hasOwnProperty('client_id') ||
+        devices['client_id'] !== params.id
+      ) {
+        console.log('not valid data');
+        return;
+      }
+
       setTableData((prev: any) => ({ ...prev, ...msg }));
       console.log('new socket message', msg);
     });
@@ -54,7 +65,7 @@ export default function DeviceById({ params }: any) {
     return () => {
       socket?.off('iotping');
     };
-  }, [socket, data]);
+  }, [socket, data, params.id]);
 
   if (userLoading === 'loading' || postLoading) {
     return (

@@ -16,20 +16,19 @@ var keyFile = fs.readFileSync(path.join(process.cwd(), 'certs/client.key'));
 
 const topics = ['iot-rpios-100', 'iot-rpios-101'];
 
-export class Mqtt {
+class Mqtt {
   mqtt: any;
   mqtt_client: any;
+  connected: boolean;
   constructor() {
     this.mqtt = mqtt;
     this.mqtt_client = null;
-
+    this.connected = false;
     this.connect();
-    this.subscribe();
-    this.un_subscribe();
   }
 
   connect() {
-    if (this.mqtt_client) return;
+    if (this.connected) return;
 
     this.mqtt_client = this.mqtt.connect(connectUrl, {
       clientId,
@@ -40,6 +39,12 @@ export class Mqtt {
       cert: certFile,
       key: keyFile,
     }) as MqttClient;
+
+    this.connected = true;
+    console.log('MQTT Connected');
+
+    this.subscribe();
+    this.un_subscribe();
   }
   message(callback: (msg: any) => any) {
     this.mqtt_client.on('message', function (topic: any, message: any) {
@@ -50,12 +55,13 @@ export class Mqtt {
     });
   }
   subscribe() {
+    this.connect();
     topics.forEach((topic) => {
       this.mqtt_client.subscribe(
         `iot/device/${topic}`,
         (err: any, granted: any) => {
           if (err) {
-            console.log(err, 'err');
+            console.log('mqtt subscribe error::: ', err);
           }
           console.log(granted, 'granted');
           console.log(`Subscribe to topic '${topic}'`);
@@ -64,22 +70,36 @@ export class Mqtt {
     });
   }
   publish(topic: string, message: string) {
-    return this.mqtt_client.publish(topic, message);
+    if (!this.connected) {
+      this.connect();
+    }
+    try {
+      this.mqtt_client.publish(topic, message);
+      return { status: 'mqtt message published' };
+    } catch (error) {
+      return error;
+    }
   }
   un_subscribe() {
-    let client = this.mqtt_client;
-    client.on('close', function () {
-      console.log('Connection closed by client');
-      topics.forEach((topic) => {
-        client.unsubscribe(`iot/device/${topic}`, (err: any, granted: any) => {
-          if (err) {
-            console.log(err, 'err');
-          }
-          console.log(granted, 'granted');
-          console.log(`unsubscribed to topic '${topic}'`);
-        });
-      });
-      client.end();
+    this.mqtt_client.on('close', () => {
+      this.connected = false;
+      console.log('MQTT Connection closed by client');
+      // topics.forEach((topic) => {
+      //   this.mqtt_client.unsubscribe(
+      //     `iot/device/${topic}`,
+      //     (err: any, granted: any) => {
+      //       if (err) {
+      //         console.log(err, 'err');
+      //       }
+      //       console.log(granted, 'granted');
+      //       console.log(`unsubscribed to topic '${topic}'`);
+      //     }
+      //   );
+      // });
+      this.mqtt_client.end();
     });
   }
 }
+
+const newMqtt = new Mqtt();
+export default newMqtt;
