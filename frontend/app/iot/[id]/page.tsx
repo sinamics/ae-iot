@@ -29,14 +29,14 @@ export default function DeviceById({ params }: any) {
 
   const socket = useSocket('/api/socketio');
 
-  const { data, isLoading, error } = useQuery({
+  const { isLoading, error } = useQuery({
     queryKey: ['devices'],
     queryFn: async () => {
       const data = await postData(params.id);
       setTableData(data);
       return data;
     },
-    networkMode: 'online',
+    networkMode: 'offlineFirst',
   });
 
   useEffect(() => {
@@ -46,11 +46,12 @@ export default function DeviceById({ params }: any) {
         console.log('not valid data');
         return;
       }
-      console.log('tqabledata', msg);
+      console.log(msg);
       setTableData((prev: any) => ({ ...prev, ...msg }));
     });
 
     return () => {
+      console.log('disconnected');
       socket?.off('iotping');
     };
   }, [socket, params.id]);

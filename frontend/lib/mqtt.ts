@@ -2,6 +2,7 @@ import mqtt, { MqttClient } from 'mqtt';
 import fs from 'fs';
 import path from 'path';
 import RedisConnect from '@/lib/redis';
+import { Socket } from 'socket.io';
 
 const redis = RedisConnect();
 
@@ -20,9 +21,11 @@ const topics = ['iot-rpios-100', 'iot-rpios-101'];
 class Mqtt {
   mqtt: any;
   mqtt_client: any;
+  io?: Socket;
   connected: boolean;
-  constructor() {
+  constructor(io?: Socket) {
     this.mqtt = mqtt;
+    this.io = io;
     this.mqtt_client = null;
     this.connected = false;
     this.connect();
@@ -44,8 +47,6 @@ class Mqtt {
     this.connected = true;
     console.log('MQTT Connected');
 
-    this.subscribe();
-    this.un_subscribe();
     this.store_messages();
   }
   store_messages() {
@@ -57,16 +58,16 @@ class Mqtt {
       redis.set(msg['client_id'], JSON.stringify(msg));
     });
   }
-  message(callback: (msg: any) => any) {
-    this.mqtt_client.on('message', function (topic: any, message: any) {
+  message() {
+    this.mqtt_client.on('message', (topic: any, message: any) => {
       const msg = JSON.parse(message.toString('utf8'));
       if (!('client_id' in msg)) return console.log('invalid mqtt message!');
       console.log('Received message on topic: ' + topic);
-      callback(msg);
+      this.io?.emit('iotping', JSON.stringify(msg));
+      this.io?.emit(msg['client_id'], JSON.stringify(msg));
     });
   }
   subscribe() {
-    this.connect();
     topics.forEach((topic) => {
       this.mqtt_client.subscribe(
         `iot/device/${topic}`,
@@ -79,11 +80,10 @@ class Mqtt {
         }
       );
     });
+    this.message();
+    this.un_subscribe();
   }
   publish(topic: string, message: string) {
-    if (!this.connected) {
-      this.connect();
-    }
     try {
       this.mqtt_client.publish(topic, message);
       return { status: 'mqtt message published' };
@@ -95,22 +95,22 @@ class Mqtt {
     this.mqtt_client.on('close', () => {
       this.connected = false;
       console.log('MQTT Connection closed by client');
-      // topics.forEach((topic) => {
-      //   this.mqtt_client.unsubscribe(
-      //     `iot/device/${topic}`,
-      //     (err: any, granted: any) => {
-      //       if (err) {
-      //         console.log(err, 'err');
-      //       }
-      //       console.log(granted, 'granted');
-      //       console.log(`unsubscribed to topic '${topic}'`);
-      //     }
-      //   );
-      // });
+      topics.forEach((topic) => {
+        this.mqtt_client.unsubscribe(
+          `iot/device/${topic}`,
+          (err: any, granted: any) => {
+            if (err) {
+              console.log(err, 'err');
+            }
+            console.log(granted, 'granted');
+            console.log(`unsubscribed to topic '${topic}'`);
+          }
+        );
+      });
       this.mqtt_client.end();
     });
   }
 }
 
-const newMqtt = new Mqtt();
-export default newMqtt;
+// const newMqtt = new Mqtt();
+export default Mqtt;

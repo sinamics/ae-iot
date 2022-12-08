@@ -1,15 +1,16 @@
+'use client';
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
 import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SliderSetpoint } from '../(components)/slider';
 import { Icons } from '@/components/icons';
 
 const postActions: any = async ({ client_id, action }: any) => {
   const response = await fetch(`${SERVER_URL}/api/iot/action`, {
     method: 'POST',
-    cache: 'no-store',
-    credentials: 'same-origin',
+    // cache: 'no-store',
+    // credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
       // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -21,14 +22,13 @@ const postActions: any = async ({ client_id, action }: any) => {
 
 export default function DeviceAction({ data }: any) {
   const [dispatch, setDispatch] = useState({ type: '', loading: false });
-
   const mutation = useMutation<IDevice>(postActions, {
     networkMode: 'online',
-    // onSuccess: () => {
-    //   // setTimeout(() => {
-    //   setDispatch((prev: any) => ({ ...prev, loading: false }));
-    //   // }, 2000);
-    // },
+    onSuccess: () => {
+      // setTimeout(() => {
+      setDispatch((prev: any) => ({ ...prev, loading: false }));
+      // }, 2000);
+    },
   });
 
   if (mutation.isError && mutation.error instanceof Error) {
@@ -36,7 +36,7 @@ export default function DeviceAction({ data }: any) {
   }
 
   const actionHandler = (action: any) => {
-    // setDispatch({ type: action, loading: true });
+    setDispatch({ type: action, loading: true });
     mutation.mutate({ ...action });
   };
 
