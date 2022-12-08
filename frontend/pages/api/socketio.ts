@@ -9,8 +9,10 @@ const redis = RedisConnect();
 
 const mqListner = (io: any) => {
   mqtt.message((msg: any) => {
+    if (!msg['client_id']) return;
     redis.set(msg['client_id'], JSON.stringify(msg));
     io.emit('iotping', JSON.stringify(msg));
+    io.emit(msg['client_id'], JSON.stringify(msg));
   });
 };
 

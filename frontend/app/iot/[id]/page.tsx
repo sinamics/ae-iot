@@ -3,7 +3,7 @@
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
 import TimeAgo from 'react-timeago';
-import { useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import DeviceAction from './(components)/actions';
@@ -28,46 +28,34 @@ export default function DeviceById({ params }: any) {
   const { status: userLoading } = useSession({ required: true });
 
   const socket = useSocket('/api/socketio');
-  const {
-    mutate,
-    isLoading: postLoading,
-    data,
-    error,
-  } = useMutation<IDevice>(postData, {
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['devices'],
+    queryFn: async () => {
+      const data = await postData(params.id);
+      setTableData(data);
+      return data;
+    },
     networkMode: 'online',
   });
 
   useEffect(() => {
-    setTableData(data);
-  }, [data]);
-
-  useEffect(() => {
-    mutate(params.id);
-  }, [params, mutate]);
-
-  useEffect(() => {
-    socket?.on('iotping', (devices: any) => {
+    socket?.on(params.id, (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
-      console.log(msg);
-      if (
-        !devices ||
-        !devices.hasOwnProperty('client_id') ||
-        devices['client_id'] !== params.id
-      ) {
+      if (!msg || !msg.hasOwnProperty('client_id')) {
         console.log('not valid data');
         return;
       }
-
+      console.log('tqabledata', msg);
       setTableData((prev: any) => ({ ...prev, ...msg }));
-      console.log('new socket message', msg);
     });
 
     return () => {
       socket?.off('iotping');
     };
-  }, [socket, data, params.id]);
+  }, [socket, params.id]);
 
-  if (userLoading === 'loading' || postLoading) {
+  if (userLoading === 'loading' || isLoading) {
     return (
       <div className='flex justify-center text-2xl text-gray-400'>
         Loading...

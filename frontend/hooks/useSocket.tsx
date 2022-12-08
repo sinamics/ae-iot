@@ -8,7 +8,7 @@ export const useSocket = (url: string) => {
   useEffect(() => {
     fetch(url).finally(() => {
       const socketio = io(`${SERVER_URL}`, {
-        path: '/api/socketio',
+        path: url,
         transports: ['websocket'],
       });
       socketio.on('connect', () => {

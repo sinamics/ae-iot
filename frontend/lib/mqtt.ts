@@ -1,8 +1,9 @@
 import mqtt, { MqttClient } from 'mqtt';
 import fs from 'fs';
 import path from 'path';
+import RedisConnect from '@/lib/redis';
 
-let client: MqttClient;
+const redis = RedisConnect();
 
 const host = 'mqtt.kodea.no';
 const port = '8884';
@@ -45,6 +46,16 @@ class Mqtt {
 
     this.subscribe();
     this.un_subscribe();
+    this.store_messages();
+  }
+  store_messages() {
+    this.mqtt_client.on('message', function (topic: any, message: any) {
+      const msg = JSON.parse(message.toString('utf8'));
+      if (!('client_id' in msg)) return console.log('invalid mqtt message!');
+
+      console.log('Storing data in DB');
+      redis.set(msg['client_id'], JSON.stringify(msg));
+    });
   }
   message(callback: (msg: any) => any) {
     this.mqtt_client.on('message', function (topic: any, message: any) {

@@ -1,5 +1,3 @@
-'use client';
-
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
 import { useMutation } from '@tanstack/react-query';
@@ -26,9 +24,11 @@ export default function DeviceAction({ data }: any) {
 
   const mutation = useMutation<IDevice>(postActions, {
     networkMode: 'online',
-    onSuccess: () => {
-      setDispatch((prev: any) => ({ ...prev, loading: false }));
-    },
+    // onSuccess: () => {
+    //   // setTimeout(() => {
+    //   setDispatch((prev: any) => ({ ...prev, loading: false }));
+    //   // }, 2000);
+    // },
   });
 
   if (mutation.isError && mutation.error instanceof Error) {
@@ -43,7 +43,7 @@ export default function DeviceAction({ data }: any) {
   if (mutation.isLoading) {
     return <div>Loading actions...</div>;
   }
-
+  // console.log(data);
   return (
     <>
       <div className='flex items-center justify-center w-full'>
@@ -53,7 +53,7 @@ export default function DeviceAction({ data }: any) {
         >
           <button
             type='button'
-            disabled={dispatch.loading}
+            // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
                 client_id: data?.client_id,
@@ -84,7 +84,7 @@ export default function DeviceAction({ data }: any) {
           </button>
           <button
             type='button'
-            disabled={dispatch.loading}
+            // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
                 client_id: data?.client_id,
@@ -123,7 +123,7 @@ export default function DeviceAction({ data }: any) {
                 },
               })
             }
-            disabled={dispatch.loading}
+            // disabled={dispatch.loading}
             className={`w-1/3 uppercase rounded-r inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
             ${
               data?.operational_mode === 'fuel'
