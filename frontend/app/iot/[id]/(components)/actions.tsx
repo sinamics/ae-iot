@@ -52,11 +52,18 @@ export default function DeviceAction({ data }: any) {
 
   return (
     <>
-      <div className='mt-10 mb-5 flex items-center justify-center uppercase'>
-        <p>Temperature setpoint ( disabled! )</p>
+      <div className='mt-5 mb-5 flex items-center justify-center uppercase'>
+        <p>Temperature ( disabled! )</p>
       </div>
       <div className='mb-10'>
-        <SliderSetpoint />
+        <SliderSetpoint min={10} max={90} defaultValue={40} />
+      </div>
+
+      <div className='mt-5 mb-5 flex items-center justify-center uppercase'>
+        <p>Fuel Price ( disabled! )</p>
+      </div>
+      <div className='mb-10'>
+        <SliderSetpoint min={10} max={800} defaultValue={270} />
       </div>
       <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
         <p>Operational Mode ({data?.operational_mode})</p>

@@ -26,16 +26,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function SliderSetpoint() {
+export function SliderSetpoint({ ...props }) {
   const { classes } = useStyles();
   return (
     <Slider
       // disabled
       labelAlwaysOn
-      min={10}
-      max={90}
-      defaultValue={40}
       classNames={classes}
+      {...props}
     />
   );
 }

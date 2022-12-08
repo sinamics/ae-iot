@@ -10,6 +10,7 @@ import TimeAgo from 'react-timeago';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/hooks/useSocket';
+import { IDevice } from '@/lib/types';
 
 type Person = {
   firstName: string;
@@ -18,21 +19,6 @@ type Person = {
   visits: number;
   status: string;
   progress: number;
-};
-
-type IDevice = {
-  available: boolean;
-  datetime: string;
-  electric_price: number;
-  electric_time_to_start: string;
-  friendly_name: string;
-  fuel_price: number;
-  fuel_time_to_start: string;
-  heater: string;
-  client_id: string;
-  operational_mode: string;
-  system: string;
-  uptime: string;
 };
 
 const formatter: any = (
@@ -84,6 +70,14 @@ const columns = [
   }),
   columnHelper.accessor('heater', {
     header: 'heater',
+    // footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor('operational_mode', {
+    header: 'Operational Mode',
+    // footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor('system', {
+    header: 'System',
     // footer: (info) => info.column.id,
   }),
 ];
