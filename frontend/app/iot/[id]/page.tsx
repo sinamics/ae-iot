@@ -68,7 +68,7 @@ export default function DeviceById({ params }: any) {
   }
 
   return (
-    <div className='container pt-20 grid grid-cols-3'>
+    <div className='container pt-10 grid grid-cols-3'>
       <div className='col-span-3 text-center text-4xl p-12'>
         {tableData?.friendly_name}
       </div>
@@ -120,7 +120,7 @@ export default function DeviceById({ params }: any) {
           </label>
           <label>{tableData?.heater}</label>
         </div>
-        <div className='flex items-center justify-between mb-6'>
+        <div className='flex items-center justify-between '>
           <label
             className='block text-gray-300 font-bold mb-1 '
             htmlFor='inline-full-name'
@@ -129,9 +129,65 @@ export default function DeviceById({ params }: any) {
           </label>
           <label>{tableData?.operational_mode}</label>
         </div>
-
+        <div className='flex items-center justify-between '>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            Electric Price
+          </label>
+          <label>{tableData?.electric_price}</label>
+        </div>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            Electric Scheduled
+          </label>
+          <label>{tableData?.electric_time_to_start}</label>
+        </div>
+        <div className='flex items-center justify-between '>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            Fuel Price
+          </label>
+          <label>{tableData?.fuel_price}</label>
+        </div>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            Fuel Scheduled
+          </label>
+          <label>{tableData?.fuel_time_to_start}</label>
+        </div>
+        <div className='flex items-center justify-between mb-6'>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            System
+          </label>
+          <label>{tableData?.system}</label>
+        </div>
         <DeviceAction data={tableData} />
       </div>
     </div>
   );
 }
+// available: boolean;
+// datetime: string;
+// electric_price: number;
+// electric_time_to_start: string;
+// friendly_name: string;
+// fuel_price: number;
+// fuel_time_to_start: string;
+// heater: string;
+// client_id: string;
+// operational_mode: string;
+// system: string;
+// uptime: string;

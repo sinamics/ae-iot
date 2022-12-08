@@ -417,7 +417,7 @@ export const Vertical = () => {
                   strokeLinejoin='round'
                 />
               </svg>
-              <p className='text-base leading-4  '>Passwords</p>
+              <p className='text-base leading-4  '>Settings</p>
             </button>
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
