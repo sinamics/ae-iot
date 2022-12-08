@@ -10,6 +10,7 @@ interface DashboardLayoutProps {
 
 export default async function IotLayout(props: DashboardLayoutProps) {
   const user = await getCurrentUser();
+
   if (!user) {
     return <div>{notFound()}</div>;
   }

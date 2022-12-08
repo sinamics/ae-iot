@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prisma-build": "prisma generate",
-    "prisma-studio": "npx prisma studio"
+    "prisma-studio": "npx prisma studio",
+    "db:push": "prisma db push --skip-generate"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",

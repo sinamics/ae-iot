@@ -100,6 +100,7 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
   useEffect(() => {
     socket?.on('iot_broadcasting', (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
+
       setTableData((prev: any) => {
         const p = [...prev];
         // check if device exsist in list
