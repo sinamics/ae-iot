@@ -21,13 +21,19 @@ const postActions: any = async ({ client_id, action }: any) => {
 };
 
 export default function DeviceAction({ data }: any) {
-  const [dispatch, setDispatch] = useState({ type: '', loading: false });
+  const [dispatch, setDispatch] = useState({
+    type: '',
+    loading: true,
+    error: '',
+  });
   const mutation = useMutation<IDevice>(postActions, {
-    networkMode: 'online',
     onSuccess: () => {
-      // setTimeout(() => {
-      setDispatch((prev: any) => ({ ...prev, loading: false }));
-      // }, 2000);
+      setTimeout(() => {
+        setDispatch((prev: any) => ({ ...prev, loading: false }));
+      }, 2000);
+    },
+    onError: (error) => {
+      setDispatch((prev: any) => ({ ...prev, loading: false, error }));
     },
   });
 
@@ -35,20 +41,29 @@ export default function DeviceAction({ data }: any) {
     return <span>Error: {mutation.error?.message}</span>;
   }
 
-  const actionHandler = (action: any) => {
-    setDispatch({ type: action, loading: true });
-    mutation.mutate({ ...action });
+  const actionHandler = (iot: any) => {
+    setDispatch((prev) => ({
+      ...prev,
+      type: iot.action.operational_mode,
+      loading: true,
+    }));
+    mutation.mutate({ ...iot });
   };
 
-  if (mutation.isLoading) {
-    return <div>Loading actions...</div>;
-  }
-  // console.log(data);
   return (
     <>
+      <div className='mt-10 mb-5 flex items-center justify-center uppercase'>
+        <p>Temperature setpoint ( disabled! )</p>
+      </div>
+      <div className='mb-10'>
+        <SliderSetpoint />
+      </div>
+      <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
+        <p>Operational Mode ({data?.operational_mode})</p>
+      </div>
       <div className='flex items-center justify-center w-full'>
         <div
-          className='inline-flex shadow-md hover:shadow-lg focus:shadow-lg w-full '
+          className='inline-flex shadow-sky-800/100 shadow-2xl focus:shadow-2xl w-full '
           role='group'
         >
           <button
@@ -65,7 +80,7 @@ export default function DeviceAction({ data }: any) {
             className={`w-1/3 uppercase rounded-l inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
             ${
               data?.operational_mode === 'electric'
-                ? 'border-slate-400 bg-slate-900'
+                ? 'border-slate-400 bg-sky-900'
                 : ''
             }`}
           >
@@ -96,7 +111,7 @@ export default function DeviceAction({ data }: any) {
             className={`w-1/3 uppercase inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
               ${
                 data?.operational_mode === 'auto'
-                  ? 'border-slate-400 bg-slate-900'
+                  ? 'border-slate-400 bg-sky-900'
                   : ''
               }`}
           >
@@ -127,7 +142,7 @@ export default function DeviceAction({ data }: any) {
             className={`w-1/3 uppercase rounded-r inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
             ${
               data?.operational_mode === 'fuel'
-                ? 'border-slate-400 bg-slate-900'
+                ? 'border-slate-400 bg-sky-900'
                 : ''
             }`}
           >
@@ -146,11 +161,8 @@ export default function DeviceAction({ data }: any) {
           </button>
         </div>
       </div>
-      <div className='mb-3 mt-10 flex items-center justify-center uppercase'>
-        <p>Temperature setpoint ( disabled! )</p>
-      </div>
-      <SliderSetpoint />
-      <div className='pt-20'>
+
+      {/* <div className='pt-20'>
         <div className='flex space-x-2 justify-center'>
           <button
             type='button'
@@ -159,7 +171,7 @@ export default function DeviceAction({ data }: any) {
             Commit Changes
           </button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

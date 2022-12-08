@@ -6,7 +6,6 @@ import { Vertical } from '@/components/navbar';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { Footer } from '@/components/footer';
-// import { subscribeToPing } from 'service/socket';
 
 const queryClient = new QueryClient();
 

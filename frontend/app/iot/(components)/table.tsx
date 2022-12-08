@@ -104,7 +104,7 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
   });
 
   useEffect(() => {
-    socket?.on('iotping', (devices: any) => {
+    socket?.on('iot_broadcasting', (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
       setTableData((prev: any) => {
         const p = [...prev];
@@ -124,7 +124,7 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
     });
 
     return () => {
-      socket?.off('iotping');
+      socket?.off('iot_broadcasting');
     };
   }, [socket]);
 

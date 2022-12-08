@@ -63,7 +63,7 @@ class Mqtt {
       const msg = JSON.parse(message.toString('utf8'));
       if (!('client_id' in msg)) return console.log('invalid mqtt message!');
       console.log('Received message on topic: ' + topic);
-      this.io?.emit('iotping', JSON.stringify(msg));
+      this.io?.emit('iot_broadcasting', JSON.stringify(msg));
       this.io?.emit(msg['client_id'], JSON.stringify(msg));
     });
   }

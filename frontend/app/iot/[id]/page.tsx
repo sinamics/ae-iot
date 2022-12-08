@@ -46,13 +46,13 @@ export default function DeviceById({ params }: any) {
         console.log('not valid data');
         return;
       }
-      console.log(msg);
+
       setTableData((prev: any) => ({ ...prev, ...msg }));
     });
 
     return () => {
       console.log('disconnected');
-      socket?.off('iotping');
+      socket?.off(params.id);
     };
   }, [socket, params.id]);
 
@@ -129,9 +129,7 @@ export default function DeviceById({ params }: any) {
           </label>
           <label>{tableData?.operational_mode}</label>
         </div>
-        <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
-          <p>Operational Mode ({tableData?.operational_mode})</p>
-        </div>
+
         <DeviceAction data={tableData} />
       </div>
     </div>
