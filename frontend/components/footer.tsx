@@ -1,5 +1,5 @@
 export const Footer = () => (
-  <footer className='hidden absolute bottom-0 w-full p-2 shadow md:flex md:items-center md:justify-between bg-gray-900'>
+  <footer className='hidden absolute bottom-0 w-full p-2 shadow md:flex md:items-center md:justify-between bg-gray-900 z-10'>
     <span className='text-sm sm:text-center text-gray-400'>
       © 2022{' '}
       <a href='https://linkme.egeland.io' className='hover:underline'>

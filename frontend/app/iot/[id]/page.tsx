@@ -68,7 +68,7 @@ export default function DeviceById({ params }: any) {
   }
 
   return (
-    <div className='container pt-10 grid grid-cols-3'>
+    <div className='grid grid-cols-3 overflow-auto h-screen'>
       <div className='col-span-3 text-center text-4xl p-12'>
         {tableData?.friendly_name}
       </div>

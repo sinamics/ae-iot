@@ -1,4 +1,4 @@
-import IotTable from './(components)/table';
+import IotTable from './(components)/dashboardTable';
 import Header from './(components)/header';
 
 import { IDevice } from '@/lib/types';
@@ -14,7 +14,7 @@ const devicesInDatabase = async () => {
   return [...redisResult];
 };
 
-const Iot = async () => {
+const Dashboard = async () => {
   const devices: any = await devicesInDatabase();
 
   return (
@@ -26,4 +26,4 @@ const Iot = async () => {
   );
 };
 
-export default Iot;
+export default Dashboard;

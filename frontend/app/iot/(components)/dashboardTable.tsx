@@ -115,7 +115,7 @@ const IotTable = ({ data }: { data: IDevice[] }) => {
 
         return [...prev, { ...msg }];
       });
-      console.log('new socket message', msg);
+      // console.log('new socket message', msg);
     });
 
     return () => {
