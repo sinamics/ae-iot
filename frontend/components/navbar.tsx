@@ -171,7 +171,10 @@ export const Vertical = () => {
             </svg>
             <p className='text-base leading-4 '>Dashboard</p>
           </button>
-          <button className='flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded '>
+          <button
+            onClick={() => router.push('/iot/users')}
+            className='flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded '
+          >
             <svg
               className='fill-stroke'
               width={24}

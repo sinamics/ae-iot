@@ -12,3 +12,9 @@ export interface IDevice {
   system: string;
   uptime: string;
 }
+
+export interface IUsers {
+  name: string;
+  email: string;
+  createdAt: string;
+}
