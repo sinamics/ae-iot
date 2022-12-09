@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import TimeAgo from 'react-timeago';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { IUsers } from '@/lib/types';
 
 const columnHelper = createColumnHelper<IUsers>();
@@ -24,15 +24,15 @@ const columns = [
     header: () => 'Created',
     id: 'createdAt',
     size: 150,
-    cell: (info) => <TimeAgo date={info.getValue()} live={true} />,
+    cell: (date) => <TimeAgo date={date.getValue()} live={true} />,
   }),
 ];
 
 const UsersTable = ({ users }: { users: any }) => {
-  const router = useRouter();
+  //   const router = useRouter();
 
   const table = useReactTable({
-    data: users,
+    data: JSON.parse(users),
     columns,
     getCoreRowModel: getCoreRowModel(),
     // debugTable: true,

@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
-import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { use } from 'react';
 import UsersTable from './(components)/userTable';
 
 const fetchUsers = () => {
@@ -7,8 +8,8 @@ const fetchUsers = () => {
 };
 
 const Users = async () => {
-  const users = await fetchUsers();
-  console.log(users);
+  const users = JSON.stringify(await fetchUsers());
+
   return (
     <div>
       <div className='flex justify-center text-2xl pt-5'>Users</div>
