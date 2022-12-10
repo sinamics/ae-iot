@@ -17,12 +17,13 @@ export default async function handler(req: NextApiRequest, res: any) {
   if (!query.hasOwnProperty('client_id'))
     return res.status(400).json({ status: 'client id not provided' });
 
-  const { action, client_id } = query;
+  const { action, client_id, type } = query;
   const mqtt = res.socket.server.mqtt;
 
   try {
     const response = mqtt.publish(
       `iot/subscribe/${client_id}`,
+      type,
       JSON.stringify({ ...action })
     );
     res.status(200).json(response);

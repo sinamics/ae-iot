@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { SliderSetpoint } from './(components)/slider';
 import { Icons } from '@/components/icons';
 
-const postActions: any = async ({ client_id, action }: any) => {
+const postActions: any = async (props: any) => {
   const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
     method: 'POST',
     // cache: 'no-store',
@@ -15,7 +15,7 @@ const postActions: any = async ({ client_id, action }: any) => {
       'Content-Type': 'application/json',
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({ client_id, action }),
+    body: JSON.stringify({ ...props }),
   });
   return response.json();
 };
