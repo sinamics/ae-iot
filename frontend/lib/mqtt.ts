@@ -54,8 +54,19 @@ class Mqtt {
       const msg = JSON.parse(message.toString('utf8'));
       if (!('client_id' in msg)) return console.log('invalid mqtt message!');
 
-      console.log('Storing data in DB');
-      redis.set(msg['client_id'], JSON.stringify(msg));
+      const action = topic.split('/').pop();
+
+      switch (action) {
+        case 'status':
+          console.log('Storing status message in DB');
+          redis.set(msg['client_id'], JSON.stringify(msg));
+          break;
+
+        default:
+          break;
+      }
+
+      console.log(action);
     });
   }
   message() {
@@ -63,22 +74,32 @@ class Mqtt {
       const msg = JSON.parse(message.toString('utf8'));
       if (!('client_id' in msg)) return console.log('invalid mqtt message!');
       console.log('Received message on topic: ' + topic);
-      this.io?.emit('iot_broadcasting', JSON.stringify(msg));
-      this.io?.emit(msg['client_id'], JSON.stringify(msg));
+
+      const action = topic.split('/').pop();
+      switch (action) {
+        case 'status':
+          this.io?.emit('iot_broadcasting', JSON.stringify(msg));
+          this.io?.emit(`${msg['client_id']}/status`, JSON.stringify(msg));
+          break;
+
+        case 'logs':
+          console.log('Log message received!');
+          this.io?.emit(`${msg['client_id']}/logs`, JSON.stringify(msg));
+          break;
+        default:
+          break;
+      }
     });
   }
   subscribe() {
     topics.forEach((topic) => {
-      this.mqtt_client.subscribe(
-        `iot/${topic}/#`,
-        (err: any, granted: any) => {
-          if (err) {
-            console.log('mqtt subscribe error::: ', err);
-          }
-          console.log(granted, 'granted');
-          console.log(`Subscribe to topic '${topic}'`);
+      this.mqtt_client.subscribe(`iot/${topic}/#`, (err: any, granted: any) => {
+        if (err) {
+          console.log('mqtt subscribe error::: ', err);
         }
-      );
+        console.log(granted, 'granted');
+        console.log(`Subscribe to topic '${topic}'`);
+      });
     });
     this.message();
     this.un_subscribe();
