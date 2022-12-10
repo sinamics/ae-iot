@@ -38,14 +38,12 @@ class MqttPublish():
     def publish_logs(self):
         self.client.loop_start()
 
-        mqtt_logs = sh.tail("/var/log/mqtt_sub.log", _iter=True)
-        status_logs = sh.tail("/var/log/cron.log", _iter=True)
+        aeiot_logs = sh.tail("/var/log/aeiot.log", _iter=True)
 
         infot = self.client.publish("iot/{}/logs".format(
             HeatCtl.redis_config_values()["client_id"]), 
             json.dumps({"client_id": HeatCtl.redis_config_values()["client_id"], 
-            "mqtt":str(mqtt_logs), 
-            "status":str(status_logs)}), 
+            str(aeiot_logs)}), 
             qos=2)
 
         print("done")
