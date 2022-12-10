@@ -40,7 +40,7 @@ export default function DeviceById({ params }: any) {
   });
 
   useEffect(() => {
-    socket?.on(params.id, (devices: any) => {
+    socket?.on(`${params.id}/status`, (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
       if (!msg || !msg.hasOwnProperty('client_id')) {
         console.log('not valid data');
