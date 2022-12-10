@@ -70,7 +70,7 @@ class Mqtt {
   subscribe() {
     topics.forEach((topic) => {
       this.mqtt_client.subscribe(
-        `iot/device/${topic}`,
+        `iot/${topic}/#`,
         (err: any, granted: any) => {
           if (err) {
             console.log('mqtt subscribe error::: ', err);

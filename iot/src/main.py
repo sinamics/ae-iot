@@ -2,6 +2,7 @@ import nordpool.elspot as nordpool
 from pprint import pprint
 from datetime import datetime, date, timedelta
 from os.path import exists
+from redis_db import r
 import socket
 import pytz
 import json
@@ -12,13 +13,54 @@ utc_tz = pytz.utc
 
 class HeatController(object):
     def __init__(self, *args, **kwargs):
-        self.config = self.read_config()
         self.hostname = socket.gethostname()
-        
+        self.redis_config = dict()
+        self.debug = False
+        self.r = r
+
+        # seed redis db 
+        self.seed()
+
+    def seed(self):
+        with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
+            config_yaml_file = yaml.load(yamlfile, Loader=yaml.FullLoader)
+
+        update_values = dict({
+                        "client_id": config_yaml_file["client_id"],
+                        "friendly_name": config_yaml_file["friendly_name"],
+                        "datetime": datetime.now(),
+                        "system": self.hostname,
+                    })
+                        
+        config_yaml_file.update(update_values)      
+        redis_config = self.redis_config_values()
+
+        if not redis_config:
+            r.set("iot/config", json.dumps(config_yaml_file, indent=4, sort_keys=True, default=str))
+        else:
+            # validate stored values is correct 
+            for line in config_yaml_file:
+                if line == "debug":
+                    self.debug = config_yaml_file[line]
+                    if config_yaml_file[line] != redis_config[line]:
+                        redis_config[line] = config_yaml_file[line]
+                        r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
+
+                if line not in redis_config:
+                    print("{} does not exsist in redis, lets add it".format(line))
+                    redis_config[line] = config_yaml_file[line]
+                    r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
+                 
+        # r.delete("{}/config".format(self.redis_config_values()["client_id"]))    
+        self.redis_config.update(config_yaml_file)
+
+
+
     def validate_data(self):
         nordpool_data = self.load_pricefile()
-        expected_keys = self.config["data_nested_path"].split("_")
-        print("validating data at {}".format(datetime.now()))
+        expected_keys = self.redis_config_values()["data_nested_path"].split("_")
+        if self.debug:
+            print("validating data at {}".format(datetime.now()))
 
         if not self.keys_exists(nordpool_data, *expected_keys) or not self.get_current_hour_price():
             return self.fetch_prices()
@@ -45,14 +87,25 @@ class HeatController(object):
         
         return True
 
-    def read_config(self):
-        with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
-            return yaml.load(yamlfile, Loader=yaml.FullLoader)
+    def redis_config_values(self):
+        return json.loads(self.r.get("iot/config"))
+
+    def update_redis_config_values(self, obj):
+        try:
+            json.loads(obj)
+        except:
+            print("invalid object received!, main ->  update_redis_config_values")
+            return
+        
+        config = self.redis_config_values()
+        config.update(obj)
+        r.set("iot/config", json.dumps(config, indent=4, sort_keys=True, default=str))
+
 
     def fetch_prices(self, *args):
         # fetching prices
         try:
-             spot_price = nordpool.Prices("NOK").hourly(areas=[self.config["nordpool_region"]],end_date=date.today())
+             spot_price = nordpool.Prices("NOK").hourly(areas=[self.redis_config_values()["nordpool_region"]],end_date=date.today())
         except:
             print("Could not fetch data from nordpool!!")
             return False
@@ -77,7 +130,7 @@ class HeatController(object):
 
     def get_current_hour_price(self):
         prices = self.load_pricefile()
-        for r in prices["areas"][self.config["nordpool_region"]]["values"]:
+        for r in prices["areas"][self.redis_config_values()["nordpool_region"]]["values"]:
             start_pricetime = datetime.strptime(r["start"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
             end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
 
@@ -97,14 +150,16 @@ class HeatController(object):
         el_time_set = False
         fuel_time_set = False
 
-        for r in prices["areas"][self.config["nordpool_region"]]["values"]:
+        for r in prices["areas"][self.redis_config_values()["nordpool_region"]]["values"]:
             if "value" and "start" and "end" in r:
                 start_pricetime = datetime.strptime(r["start"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 
                 el_price = float(r["value"]) / 10 * 1.25
-                fuel_price = self.config["fuel_kwh_price"]
+                fuel_price = self.redis_config_values()["fuel_price"]
 
+                if not fuel_price:
+                    return print("Invalid fuel price")
                 now = datetime.utcnow().replace(tzinfo=utc_tz)
                 if end_pricetime >= now :
                     if el_price >= fuel_price:
@@ -132,4 +187,4 @@ class HeatController(object):
 
 
     def get_tomorrow(self, *args):
-        return nordpool.Prices("NOK").hourly(areas=[self.config["nordpool_region"]],end_date=date.today() + timedelta(days=1))
+        return nordpool.Prices("NOK").hourly(areas=[self.redis_config_values()["nordpool_region"]],end_date=date.today() + timedelta(days=1))

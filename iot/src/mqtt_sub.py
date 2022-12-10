@@ -4,6 +4,7 @@
 
 from paho.mqtt import client as mqtt # type: ignore
 from main import HeatController
+from redis_db import r
 import os.path
 import os
 import redis
@@ -16,8 +17,6 @@ keyfile=os.path.join(dirname, 'certs/client.key')
 certfile=os.path.join(dirname, 'certs/client.crt')
 
 HeatCtl = HeatController()
-
-r = redis.Redis(host='redis', port=6379, db=0)
 
 class MqttSubscribe(mqtt.Client):
 
@@ -32,8 +31,29 @@ class MqttSubscribe(mqtt.Client):
             print("invalid json data received from mqtt broker!")
             return
 
-        r.set("{}/config".format(HeatCtl.read_config()["client_id"]), msg.payload.decode("utf-8"))
-        os.system('python3 /ae-iot/iot/src/cron.py')
+        recevied_message = json.loads(msg.payload.decode("utf-8"))
+        if "type" not in recevied_message:
+            return print("invalid message received from broker!")
+
+        
+        match recevied_message.type:
+            case "update":
+                print("got update request from broker")
+                
+                # update values in main class 
+                HeatCtl.update_redis_config_values(msg.payload.decode("utf-8"))
+
+                # send updated values back to broker 
+                os.system('python3 /ae-iot/iot/src/cron.py')
+            case "logs":
+                # /var/log/cron.log
+                # /var/log/mqtt_sub.log
+                print("broker requests log files")
+            case _:
+                print("no action type received")
+
+        
+        
 
     def on_publish(self, mqttc, obj, mid):
         print("mid: "+str(mid))
@@ -48,7 +68,7 @@ class MqttSubscribe(mqtt.Client):
         # self.reconnect_delay_set(min_delay=1, max_delay=120)
         self.tls_set(ca_certs=cafile, certfile=certfile, keyfile=keyfile, cert_reqs=True)
         self.connect("mqtt.kodea.no", 8884, 60)
-        self.subscribe("iot/subscribe/{}".format(HeatCtl.read_config()["client_id"]), 0)
+        self.subscribe("iot/subscribe/{}".format(HeatCtl.redis_config_values()["client_id"]), 0)
         self.on_message = self.on_message
         self.on_subscribe = self.on_subscribe
 
@@ -62,7 +82,7 @@ class MqttSubscribe(mqtt.Client):
 # mqttc = MyMQTTClass("client-id")
 # but note that the client id must be unique on the broker. Leaving the client
 # id parameter empty will generate a random id for you.
-mqttc = MqttSubscribe("{}-subscribe".format(HeatCtl.read_config()["client_id"]))
+mqttc = MqttSubscribe("{}-subscribe".format(HeatCtl.redis_config_values()["client_id"]))
 rc = mqttc.run()
 
 print("rc: "+str(rc))
