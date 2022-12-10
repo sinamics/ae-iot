@@ -2,11 +2,11 @@
 
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+import { useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { Button } from '@mantine/core';
+import { AutoScrollList } from '@/components/scrollIntoView';
 
 const postActions: any = async (props: any) => {
   const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
@@ -23,8 +23,6 @@ const postActions: any = async (props: any) => {
 };
 export default function Log({ params }: any) {
   const [logData, setLogData] = useState<any>();
-  const { status: userLoading } = useSession({ required: true });
-
   const socket = useSocket('/api/socketio');
 
   const mutation: any = useMutation<any>(postActions);
@@ -44,6 +42,7 @@ export default function Log({ params }: any) {
   return (
     <div className=''>
       <Button
+        className='mb-5 w-1/3 uppercase rounded-l inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out'
         onClick={() =>
           mutation.mutate({
             client_id: params?.id,
@@ -53,9 +52,11 @@ export default function Log({ params }: any) {
       >
         Fetch Logfiles
       </Button>
-      <div></div>
-      Logs:
-      {logData && logData.data}
+      {logData ? (
+        <pre className='pb-40 bg-slate-900 p-5 h-[600px] overflow-auto flex justify-end rounded-md shadow-2xl'>
+          <AutoScrollList>{logData && logData.data}</AutoScrollList>
+        </pre>
+      ) : null}
     </div>
   );
 }

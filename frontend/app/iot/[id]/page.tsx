@@ -70,11 +70,10 @@ export default function DeviceById({ params }: any) {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
-      <div className='col-span-3 text-center text-4xl pt-12 grid-flow-col'>
-        {tableData?.friendly_name}
-      </div>
-
       <div className='col-start-2 grid-flow-row'>
+        <div className='text-center text-4xl pt-12 grid-flow-col pb-20'>
+          {tableData?.friendly_name}
+        </div>
         <div className='flex items-center justify-between'>
           <label
             className='block text-gray-300 font-bold mb-1 '
@@ -178,8 +177,7 @@ export default function DeviceById({ params }: any) {
         </div>
         <DeviceAction data={tableData} />
       </div>
-      <div className='container col-start-3'>
-        <p className='uppercase'>Logs</p>
+      <div className='container col-start-3 pt-14'>
         <Log params={params} />
       </div>
     </div>
