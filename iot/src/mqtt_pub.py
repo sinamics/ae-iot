@@ -38,7 +38,15 @@ class MqttPublish():
     def publish_logs(self):
         self.client.loop_start()
 
-        aeiot_logs = sh.tail("/var/log/aeiot.log", _iter=True)
+        aeiot_logs = None
+        try:
+            aeiot_logs = sh.tail("/var/log/aeiot.log", _iter=True, _ok_code=[0, 1])
+        except:
+            print("Error reading logfile")
+            sys.exit()
+        
+        if not aeiot_logs:
+            aeiot_logs = "Logfile has no content yet"
 
         infot = self.client.publish("iot/{}/logs".format(
             HeatCtl.redis_config_values()["client_id"]), 
