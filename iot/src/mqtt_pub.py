@@ -1,6 +1,7 @@
 from paho.mqtt import client as mqtt # type: ignore
 from main import HeatController
 import os.path
+import sh
 dirname = os.path.dirname(__file__)
 
 # QOS 0 – Once (not guaranteed)
@@ -35,8 +36,9 @@ class MqttPublish():
 
     def publish_logs(self, msg):
         self.client.loop_start()
-
-        infot = self.client.publish("iot/{}/logs".format(HeatCtl.redis_config_values()["client_id"]), json.dumps({"logfile": "test"}), qos=2)
+        mqtt_logs = sh.tail("/var/log/mqtt_sub.log", _iter=True)
+        status_logs = sh.tail("/var/log/cron.log", _iter=True)
+        infot = self.client.publish("iot/{}/logs".format(HeatCtl.redis_config_values()["client_id"]), json.dumps({"mqtt":mqtt_logs, "status":status_logs}), qos=2)
         infot.wait_for_publish()
 
         self.client.loop_stop()
