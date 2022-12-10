@@ -75,7 +75,6 @@ class Mqtt {
       if (!('client_id' in msg))
         return console.log('invalid mqtt status message!');
       console.log('Received message on topic: ' + topic);
-      console.log(msg);
 
       const action = topic.split('/').pop();
       if (!action) return console.log('Invalid topic');

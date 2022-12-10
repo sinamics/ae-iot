@@ -32,7 +32,6 @@ export default function Log({ params }: any) {
   useEffect(() => {
     socket?.on(`${params.id}/logs`, (devices: any) => {
       const msg: IDevice = JSON.parse(devices);
-      console.log(devices);
       setLogData(msg);
     });
 
@@ -54,7 +53,11 @@ export default function Log({ params }: any) {
       >
         Fetch Logfiles
       </Button>
-      {JSON.stringify(logData)}
+      <div></div>
+      Status Logs:
+      {logData && logData.status}
+      Mqtt Logs:
+      {logData && logData.mqtt}
     </div>
   );
 }
