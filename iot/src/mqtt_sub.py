@@ -20,7 +20,7 @@ certfile=os.path.join(dirname, 'certs/client.crt')
 
 HeatCtl = HeatController()
 # instantiate new mqtt class
-mqtt_publish = MqttPublish()
+
 
 class MqttSubscribe(mqtt.Client):
 
@@ -51,8 +51,8 @@ class MqttSubscribe(mqtt.Client):
             return 
 
         elif recevied_message["type"] == "logs":
-
                 print("broker requests log files")
+                mqtt_publish = MqttPublish()
                 mqtt_publish.publish_logs()
                 return
 

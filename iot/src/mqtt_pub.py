@@ -33,14 +33,14 @@ class MqttPublish():
         infot.wait_for_publish()
 
         self.client.loop_stop()
-        # self.client.disconnect()
+        self.client.disconnect()
 
     def publish_logs(self):
         self.client.loop_start()
 
         aeiot_logs = None
         try:
-            aeiot_logs = sh.tail("/var/log/aeiot.log", _iter=True, _ok_code=[0, 1])
+            aeiot_logs = sh.tail("-n 50", "/var/log/aeiot.log", _iter=True, _ok_code=[0, 1])
         except:
             print("Error reading logfile")
             sys.exit()
@@ -58,4 +58,4 @@ class MqttPublish():
         infot.wait_for_publish()
 
         self.client.loop_stop()
-        # self.client.disconnect()
+        self.client.disconnect()

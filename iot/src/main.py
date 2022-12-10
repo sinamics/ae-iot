@@ -89,6 +89,13 @@ class HeatController(object):
         return True
 
     def redis_config_values(self):
+        config = self.r.get("iot/config")
+        try:
+            json.loads(config)
+        except:
+            print("invalid or no config stored in redis, main -> redis_config_values")
+            return
+
         return json.loads(self.r.get("iot/config"))
 
     def update_redis_config_values(self, obj):
