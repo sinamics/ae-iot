@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import UserMenu from './userMenu';
+import Link from 'next/link';
 
 export const Vertical = () => {
   const { data: session, status } = useSession();
@@ -129,8 +130,8 @@ export const Vertical = () => {
           <p className='text-2xl leading-6 text-white'>AE Varme</p>
         </div>
         <div className='mt-6 flex flex-col justify-start items-center  pl-4 w-full border-gray-600 border-b space-y-3 pb-5 '>
-          <button
-            onClick={() => router.push('/iot')}
+          <Link
+            href='/iot'
             className='flex jusitfy-start items-center space-x-6 w-full  focus:outline-none  focus:text-indigo-400  text-white rounded '
           >
             <svg
@@ -171,9 +172,9 @@ export const Vertical = () => {
               />
             </svg>
             <p className='text-base leading-4 '>Dashboard</p>
-          </button>
-          <button
-            onClick={() => router.push('/iot/users')}
+          </Link>
+          <Link
+            href='/iot/users'
             className='flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded '
           >
             <svg
@@ -200,7 +201,7 @@ export const Vertical = () => {
               />
             </svg>
             <p className='text-base leading-4 '>Users</p>
-          </button>
+          </Link>
         </div>
         <div className='flex flex-col justify-start items-center   px-6 border-b border-gray-600 w-full  '>
           <button
@@ -423,6 +424,7 @@ export const Vertical = () => {
               </svg>
               <p className='text-base leading-4  '>Settings</p>
             </button>
+
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
               className='flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52'
