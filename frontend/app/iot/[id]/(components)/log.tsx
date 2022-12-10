@@ -55,7 +55,7 @@ export default function Log({ params }: any) {
       </Button>
       <div></div>
       Logs:
-      {logData && logData}
+      {logData && logData.data}
     </div>
   );
 }
