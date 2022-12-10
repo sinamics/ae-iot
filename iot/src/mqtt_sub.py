@@ -4,11 +4,13 @@
 
 from paho.mqtt import client as mqtt # type: ignore
 from main import HeatController
+from mqtt_pub import MqttPublish
 from redis_db import r
 import os.path
 import os
 import redis
 import json
+import sh
 
 dirname = os.path.dirname(__file__)
 
@@ -17,6 +19,8 @@ keyfile=os.path.join(dirname, 'certs/client.key')
 certfile=os.path.join(dirname, 'certs/client.crt')
 
 HeatCtl = HeatController()
+# instantiate new mqtt class
+mqtt_publish = MqttPublish()
 
 class MqttSubscribe(mqtt.Client):
 
@@ -36,21 +40,23 @@ class MqttSubscribe(mqtt.Client):
             return print("invalid message received from broker!")
 
         
-        match recevied_message.type:
-            case "update":
-                print("got update request from broker")
-                
-                # update values in main class 
-                HeatCtl.update_redis_config_values(msg.payload.decode("utf-8"))
+        if recevied_message.type == "update":
+            print("got update request from broker")
+            
+            # update values in main class 
+            HeatCtl.update_redis_config_values(msg.payload.decode("utf-8"))
+            
+            # send updated values back to broker 
+            os.system('python3 /ae-iot/iot/src/cron.py')
 
-                # send updated values back to broker 
-                os.system('python3 /ae-iot/iot/src/cron.py')
-            case "logs":
+        elif recevied_message.type == "logs":
                 # /var/log/cron.log
                 # /var/log/mqtt_sub.log
+                mqtt_publish.publish_logs()
                 print("broker requests log files")
-            case _:
-                print("no action type received")
+
+        else:
+            print("no valid action type received")
 
         
         
