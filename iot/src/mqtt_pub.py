@@ -36,7 +36,7 @@ class MqttPublish():
     def publish_logs(self, msg):
         self.client.loop_start()
 
-        infot = self.client.publish("iot/{}/logs".format(HeatCtl.redis_config_values()["client_id"]), msg, qos=2)
+        infot = self.client.publish("iot/{}/logs".format(HeatCtl.redis_config_values()["client_id"]), json.dumps({"logfile": "test"}), qos=2)
         infot.wait_for_publish()
 
         self.client.loop_stop()
