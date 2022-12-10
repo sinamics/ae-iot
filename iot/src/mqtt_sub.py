@@ -28,7 +28,6 @@ class MqttSubscribe(mqtt.Client):
         print("rc: "+str(rc))
 
     def on_message(self, mqttc, obj, msg):
-        print(msg.payload.decode("utf-8"))
         try:
             json.loads(msg.payload.decode("utf-8"))
         except:
@@ -36,11 +35,12 @@ class MqttSubscribe(mqtt.Client):
             return
 
         recevied_message = json.loads(msg.payload.decode("utf-8"))
+
         if "type" not in recevied_message:
             return print("invalid message received from broker!")
 
         
-        if recevied_message.type == "update":
+        if recevied_message["type"] == "update":
             print("got update request from broker")
             
             # update values in main class 
@@ -48,12 +48,13 @@ class MqttSubscribe(mqtt.Client):
             
             # send updated values back to broker 
             os.system('python3 /ae-iot/iot/src/cron.py')
+            return 
 
-        elif recevied_message.type == "logs":
-                # /var/log/cron.log
-                # /var/log/mqtt_sub.log
-                mqtt_publish.publish_logs()
+        elif recevied_message["type"] == "logs":
+
                 print("broker requests log files")
+                mqtt_publish.publish_logs()
+                return
 
         else:
             print("no valid action type received")
