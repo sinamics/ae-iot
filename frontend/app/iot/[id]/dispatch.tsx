@@ -79,6 +79,7 @@ export default function DeviceAction({ data }: any) {
             onClick={() =>
               actionHandler({
                 client_id: data?.client_id,
+                type: 'update',
                 action: {
                   operational_mode: 'electric',
                 },
