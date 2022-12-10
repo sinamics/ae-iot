@@ -3,11 +3,11 @@ import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
 import { useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { SliderSetpoint } from '../(components)/slider';
+import { SliderSetpoint } from './(components)/slider';
 import { Icons } from '@/components/icons';
 
 const postActions: any = async ({ client_id, action }: any) => {
-  const response = await fetch(`${SERVER_URL}/api/iot/action`, {
+  const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
     method: 'POST',
     // cache: 'no-store',
     // credentials: 'same-origin',

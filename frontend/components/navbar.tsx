@@ -1,17 +1,17 @@
 'use client';
 import React, { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import UserMenu from './userMenu';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export const Vertical = () => {
   const { data: session, status } = useSession();
   let menuArray = [false, false, false];
   const [menu, setMenu] = useState(menuArray);
   const [show, setShow] = useState(true);
-
-  const router = useRouter();
+  const path = usePathname();
 
   const setMenuValue = (props: any) => {
     let newArr = [...menu];
@@ -132,7 +132,10 @@ export const Vertical = () => {
         <div className='mt-6 flex flex-col justify-start items-center  pl-4 w-full border-gray-600 border-b space-y-3 pb-5 '>
           <Link
             href='/iot'
-            className='flex jusitfy-start items-center space-x-6 w-full  focus:outline-none  focus:text-indigo-400  text-white rounded '
+            className={cn(
+              `flex jusitfy-start items-center space-x-6 w-full  focus:outline-none  text-white rounded`,
+              path === '/iot' ? 'text-indigo-400' : ''
+            )}
           >
             <svg
               className='fill-stroke '
@@ -175,7 +178,10 @@ export const Vertical = () => {
           </Link>
           <Link
             href='/iot/users'
-            className='flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded '
+            className={cn(
+              `flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400 rounded`,
+              path === '/iot/users' ? 'text-indigo-400' : ''
+            )}
           >
             <svg
               className='fill-stroke'

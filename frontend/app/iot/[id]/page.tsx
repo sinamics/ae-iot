@@ -6,7 +6,7 @@ import TimeAgo from 'react-timeago';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import DeviceAction from './(components)/actions';
+import DeviceAction from './dispatch';
 import { useSocket } from '@/hooks/useSocket';
 
 const postData: any = async (client_id: string) => {
@@ -68,11 +68,11 @@ export default function DeviceById({ params }: any) {
   }
 
   return (
-    <div className='grid grid-cols-3 overflow-auto h-screen'>
-      <div className='col-span-3 text-center text-4xl p-12'>
+    <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
+      <div className='col-span-3 text-center text-4xl pt-12 grid-flow-col'>
         {tableData?.friendly_name}
       </div>
-      <div className='col-start-2'>
+      <div className='col-start-2 grid-flow-row'>
         <div className='flex items-center justify-between'>
           <label
             className='block text-gray-300 font-bold mb-1 '
