@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import DeviceAction from './dispatch';
 import { useSocket } from '@/hooks/useSocket';
+import Log from './(components)/log';
 
 const postData: any = async (client_id: string) => {
   const response = await fetch(`${SERVER_URL}/api/iot/devices`, {
@@ -52,7 +53,7 @@ export default function DeviceById({ params }: any) {
 
     return () => {
       console.log('disconnected');
-      socket?.off(params.id);
+      socket?.off(`${params.id}/status`);
     };
   }, [socket, params.id]);
 
@@ -72,6 +73,7 @@ export default function DeviceById({ params }: any) {
       <div className='col-span-3 text-center text-4xl pt-12 grid-flow-col'>
         {tableData?.friendly_name}
       </div>
+
       <div className='col-start-2 grid-flow-row'>
         <div className='flex items-center justify-between'>
           <label
@@ -175,6 +177,10 @@ export default function DeviceById({ params }: any) {
           <label>{tableData?.system}</label>
         </div>
         <DeviceAction data={tableData} />
+      </div>
+      <div className='container col-start-3'>
+        <p className='uppercase'>Logs</p>
+        <Log params={params} />
       </div>
     </div>
   );
