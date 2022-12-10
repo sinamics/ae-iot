@@ -54,10 +54,8 @@ export default function Log({ params }: any) {
         Fetch Logfiles
       </Button>
       <div></div>
-      Status Logs:
-      {logData && logData.status}
-      Mqtt Logs:
-      {logData && logData.mqtt}
+      Logs:
+      {logData && logData}
     </div>
   );
 }
