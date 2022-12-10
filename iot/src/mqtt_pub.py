@@ -43,7 +43,7 @@ class MqttPublish():
         infot = self.client.publish("iot/{}/logs".format(
             HeatCtl.redis_config_values()["client_id"]), 
             json.dumps({"client_id": HeatCtl.redis_config_values()["client_id"], 
-            str(aeiot_logs)}), 
+            "data":str(aeiot_logs)}), 
             qos=2)
 
         print("done")
