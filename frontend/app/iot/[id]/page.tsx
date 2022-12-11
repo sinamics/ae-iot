@@ -71,7 +71,7 @@ export default function DeviceById({ params }: any) {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
-      <div className='col-start-2 grid-flow-row pb-48'>
+      <div className='col-start-2 row-span-full pb-48'>
         <div className='text-center text-4xl pt-12 grid-flow-col pb-20'>
           {iotData?.friendly_name}
         </div>
@@ -179,7 +179,7 @@ export default function DeviceById({ params }: any) {
         <DeviceAction iotDataProps={iotData} />
         <Divider
           my='md'
-          label='Logger'
+          label='Logg'
           labelPosition='center'
           className='pt-20'
         />
