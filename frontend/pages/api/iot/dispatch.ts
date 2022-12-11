@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: any) {
   try {
     const response = mqtt.publish(
       `iot/subscribe/${client_id}`,
-      JSON.stringify({ type, ...action })
+      JSON.stringify({ type, action })
     );
     res.status(200).json(response);
   } catch (error) {
