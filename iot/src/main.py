@@ -21,8 +21,8 @@ class HeatController(object):
         self.seed()
 
     def seed(self):
-        with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
-        # with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
+        # with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
+        with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
             config_yaml_file = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
         update_values = dict({
