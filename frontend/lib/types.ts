@@ -11,6 +11,7 @@ export interface IDevice {
   operational_mode: string;
   system: string;
   uptime: string;
+  debug: boolean;
 }
 
 export interface IUsers {

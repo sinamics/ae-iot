@@ -12,7 +12,7 @@ export const useSocket = (url: string) => {
         transports: ['websocket'],
       });
       socketio.on('connect', () => {
-        console.log('connect');
+        console.log('websocket connected');
       });
       socketio.on('disconnect', () => {
         console.log('disconnect');

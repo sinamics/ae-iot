@@ -30,7 +30,7 @@ export default function DeviceById({ params }: any) {
 
   const socket = useSocket('/api/socketio');
 
-  const { isLoading, error } = useQuery({
+  const { isLoading, error, status } = useQuery({
     queryKey: ['devices'],
     queryFn: async () => {
       const data = await postData(params.id);
@@ -52,7 +52,7 @@ export default function DeviceById({ params }: any) {
     });
 
     return () => {
-      console.log('disconnected');
+      // console.log('disconnected');
       socket?.off(`${params.id}/status`);
     };
   }, [socket, params.id]);
@@ -67,7 +67,6 @@ export default function DeviceById({ params }: any) {
   if (error instanceof Error) {
     return <span>Error: {error?.message}</span>;
   }
-
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
       <div className='col-start-2 grid-flow-row'>

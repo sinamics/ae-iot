@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { SliderSetpoint } from './(components)/slider';
 import { Icons } from '@/components/icons';
+import { Checkbox, Divider } from '@mantine/core';
 
 const postActions: any = async (props: any) => {
   const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
@@ -20,7 +21,8 @@ const postActions: any = async (props: any) => {
   return response.json();
 };
 
-export default function DeviceAction({ data }: any) {
+export default function DeviceAction({ data }: { data: IDevice }) {
+  const [checkbox, setCheckBox] = useState({ debug: false });
   const [dispatch, setDispatch] = useState({
     type: '',
     loading: true,
@@ -49,9 +51,15 @@ export default function DeviceAction({ data }: any) {
     }));
     mutation.mutate({ ...iot });
   };
-
+  const checkboxHandler = (checked: boolean, name: string) => {
+    setCheckBox((prev: any) => ({
+      ...prev,
+      [name]: checked,
+    }));
+  };
   return (
     <>
+      <Divider my='md' label='Settings' labelPosition='center' />
       <div className='mt-5 mb-5 flex items-center justify-center uppercase'>
         <p>Temperature ( disabled! )</p>
       </div>
@@ -65,6 +73,28 @@ export default function DeviceAction({ data }: any) {
       <div className='mb-10'>
         <SliderSetpoint min={10} max={800} defaultValue={270} />
       </div>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 '
+            htmlFor='inline-full-name'
+          >
+            Debug
+            <small className='block font-light'>
+              Provides more verbose output in logfiles
+            </small>
+          </label>
+          <label>
+            {' '}
+            <Checkbox
+              checked={checkbox.debug || data?.debug}
+              onChange={(event) =>
+                checkboxHandler(event.currentTarget.checked, 'debug')
+              }
+            />
+          </label>
+        </div>
+      </section>
       <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
         <p>Operational Mode ({data?.operational_mode})</p>
       </div>
@@ -203,17 +233,6 @@ export default function DeviceAction({ data }: any) {
           </button>
         </div>
       </div>
-
-      {/* <div className='pt-20'>
-        <div className='flex space-x-2 justify-center'>
-          <button
-            type='button'
-            className='w-full rounded-md border border-gray-400 bg-transparent py-2 px-3 text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-slate-400 md:top-8 md:left-8'
-          >
-            Commit Changes
-          </button>
-        </div>
-      </div> */}
     </>
   );
 }

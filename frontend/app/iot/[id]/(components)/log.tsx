@@ -34,7 +34,7 @@ export default function Log({ params }: any) {
     });
 
     return () => {
-      console.log('disconnected logs');
+      // console.log('disconnected logs');
       socket?.off(`${params.id}/logs`);
     };
   }, [socket, params.id]);
