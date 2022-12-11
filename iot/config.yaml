@@ -7,16 +7,17 @@ friendly_name: 'egeland device #1'
 #######################################
 data_nested_path: areas_Kr.sand_values # Do not change!
 nordpool_region: Kr.sand # https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/NO/Weekly/?view=table
-fuel_kwh_price: 270 # Øre pr kwh. 
+fuel_kwh_price: 270 # Øre pr kwh.
 fuel_gpio_output_pin: 38 # (GPIO20) High when fuel kwh price is less than electric kwh price
 electric_gpio_output_pin: 40 # (GPIO21)
 datetime: None
 system: None
-heater: "stopped"
+heater: 'stopped'
 electric_time_to_start: None
 fuel_time_to_start: None
 fuel_price: 270
 electric_price: None
 uptime: None
-operational_mode: "auto"
-#debug: True  # Debug paramater will override the use input from controller. Only enable to set debug permanent! 
+operational_mode: 'auto'
+temperature_setpoint: None
+#debug: True  # Debug paramater will override the use input from controller. Only enable to set debug permanent!

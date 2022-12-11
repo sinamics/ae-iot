@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import DeviceAction from './dispatch';
 import { useSocket } from '@/hooks/useSocket';
 import Log from './(components)/log';
+import { Divider } from '@mantine/core';
 
 const postData: any = async (client_id: string) => {
   const response = await fetch(`${SERVER_URL}/api/iot/devices`, {
@@ -57,7 +58,7 @@ export default function DeviceById({ params }: any) {
     };
   }, [socket, params.id]);
 
-  if (userLoading === 'loading' || loadingDevices) {
+  if (userLoading === 'loading' || loadingDevices || !iotData) {
     return (
       <div className='flex justify-center text-2xl text-gray-400 pt-20'>
         Loading IoT data...
@@ -67,9 +68,10 @@ export default function DeviceById({ params }: any) {
   if (error instanceof Error) {
     return <span>Error: {error?.message}</span>;
   }
+
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
-      <div className='col-start-2 grid-flow-row'>
+      <div className='col-start-2 grid-flow-row pb-48'>
         <div className='text-center text-4xl pt-12 grid-flow-col pb-20'>
           {iotData?.friendly_name}
         </div>
@@ -175,9 +177,15 @@ export default function DeviceById({ params }: any) {
           <label>{iotData?.system}</label>
         </div>
         <DeviceAction iotDataProps={iotData} />
-      </div>
-      <div className='container col-start-3 pt-14'>
-        <Log params={params} />
+        <Divider
+          my='md'
+          label='Logger'
+          labelPosition='center'
+          className='pt-20'
+        />
+        <div className='pt-14 pb-44'>
+          <Log params={params} />
+        </div>
       </div>
     </div>
   );

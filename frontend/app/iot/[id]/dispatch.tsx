@@ -5,10 +5,10 @@ import { parseMutationArgs, useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { SliderSetpoint } from './(components)/slider';
 import { Icons } from '@/components/icons';
-import { Checkbox, Divider } from '@mantine/core';
+import { Checkbox, Divider, Input } from '@mantine/core';
+import { IconChevronDown } from '@tabler/icons';
 
 const postActions: any = async (props: any) => {
-  console.log(props);
   const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
     method: 'POST',
     // cache: 'no-store',
@@ -27,6 +27,13 @@ export default function DeviceAction({
 }: {
   iotDataProps: IDevice;
 }) {
+  const [defaultValue, setDefaultValue] = useState({
+    fuel_price: Number(0),
+    temperature_setpoint: Number(0),
+    electric_gpio_output_pin: Number(0),
+    fuel_gpio_output_pin: Number(0),
+    temperature_setpoint_gpio_output_pin: Number(0),
+  });
   const [iotData, setIotData] = useState(iotDataProps);
   const [dispatch, setDispatch] = useState({
     type: '',
@@ -46,7 +53,10 @@ export default function DeviceAction({
   });
 
   useEffect(() => {
+    if (!iotDataProps) return;
+
     setIotData(iotDataProps);
+    setDefaultValue(iotDataProps);
   }, [iotDataProps]);
 
   if (mutation.isError && mutation.error instanceof Error) {
@@ -59,25 +69,21 @@ export default function DeviceAction({
       type: iot.action.operational_mode,
       loading: true,
     }));
+    // console.log(iot);
     mutation.mutate({ ...iot });
+  };
+
+  const sliderHandler = (name: string, value: number) => {
+    setDefaultValue((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
     <>
       <Divider my='md' label='Settings' labelPosition='center' />
-      <div className='mt-5 mb-5 flex items-center justify-center uppercase'>
-        <p>Temperature ( disabled! )</p>
-      </div>
-      <div className='mb-10'>
-        <SliderSetpoint min={10} max={90} defaultValue={40} />
-      </div>
 
-      <div className='mt-5 mb-5 flex items-center justify-center uppercase'>
-        <p>Fuel Price ( disabled! )</p>
-      </div>
-      <div className='mb-10'>
-        <SliderSetpoint min={10} max={800} defaultValue={270} />
-      </div>
       <section className='mt-10'>
         <div className='flex items-center justify-between'>
           <label
@@ -91,7 +97,6 @@ export default function DeviceAction({
             </small>
           </label>
           <label>
-            {' '}
             <Checkbox
               checked={iotData?.debug}
               onChange={(event: any) =>
@@ -108,6 +113,202 @@ export default function DeviceAction({
               // }
             />
           </label>
+        </div>
+      </section>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 w-2/4'
+            htmlFor='inline-full-name'
+          >
+            Fuel Price
+            <small className='block font-light'>
+              Adjust the fuel price for this IoI device
+            </small>
+          </label>
+          <div className='w-2/4'>
+            <SliderSetpoint
+              min={10}
+              max={800}
+              defaultValue={iotData?.fuel_price}
+              onChange={(e: number) => sliderHandler('fuel_price', e)}
+            />
+            {iotData?.fuel_price !== defaultValue?.fuel_price ? (
+              <button
+                type='button'
+                onClick={() =>
+                  actionHandler({
+                    client_id: iotData?.client_id,
+                    type: 'update',
+                    action: {
+                      fuel_price: defaultValue?.fuel_price,
+                    },
+                  })
+                }
+                className='mt-3 w-full uppercase rounded-l inline-block px-6 py-1.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out'
+              >
+                Submit Changes
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </section>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 w-2/4'
+            htmlFor='inline-full-name'
+          >
+            Temperature Setpoint
+            <small className='block font-light'>
+              Adjust the temperature setpoint for this IoI heater device
+            </small>
+          </label>
+          <div className='w-2/4'>
+            <SliderSetpoint
+              min={10}
+              max={120}
+              defaultValue={iotData?.temperature_setpoint}
+              onChange={(e: number) => sliderHandler('temperature_setpoint', e)}
+            />
+            {iotData?.temperature_setpoint !==
+            defaultValue?.temperature_setpoint ? (
+              <button
+                type='button'
+                onClick={(event: any) =>
+                  actionHandler({
+                    client_id: iotData?.client_id,
+                    type: 'update',
+                    action: {
+                      temperature_setpoint: parseInt(event.currentTarget.value),
+                    },
+                  })
+                }
+                className='mt-3 w-full uppercase rounded-l inline-block px-6 py-1.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out'
+              >
+                Submit Changes
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </section>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 w-3/4'
+            htmlFor='inline-full-name'
+          >
+            Fuel Output Pin
+            <small className='block font-light'>
+              Set the GPIO pin number to be HIGH when fuel heater should be used
+            </small>
+          </label>
+          <div className='w-1/4'>
+            <Input
+              className='w-full'
+              value={iotData?.fuel_gpio_output_pin}
+              component='select'
+              rightSection={<IconChevronDown size={14} stroke={1.5} />}
+              onChange={(event) =>
+                actionHandler({
+                  client_id: iotData?.client_id,
+                  type: 'update',
+                  action: {
+                    fuel_gpio_output_pin: parseInt(event.currentTarget.value),
+                  },
+                })
+              }
+            >
+              {new Array(200).fill('').map((v, idx) => {
+                return (
+                  <option key={idx} value={idx}>
+                    {idx}
+                  </option>
+                );
+              })}
+            </Input>
+          </div>
+        </div>
+      </section>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 w-3/4'
+            htmlFor='inline-full-name'
+          >
+            Electric Output Pin
+            <small className='block font-light'>
+              Set the GPIO pin number to be HIGH when electric heater should be
+              used
+            </small>
+          </label>
+          <div className='w-1/4'>
+            <Input
+              value={iotData?.electric_gpio_output_pin}
+              className='w-full'
+              component='select'
+              rightSection={<IconChevronDown size={14} stroke={1.5} />}
+              onChange={(event: any) =>
+                actionHandler({
+                  client_id: iotData?.client_id,
+                  type: 'update',
+                  action: {
+                    electric_gpio_output_pin: parseInt(
+                      event.currentTarget.value
+                    ),
+                  },
+                })
+              }
+            >
+              {new Array(200).fill('').map((v, idx) => {
+                return (
+                  <option key={idx} value={idx}>
+                    {idx}
+                  </option>
+                );
+              })}
+            </Input>
+          </div>
+        </div>
+      </section>
+      <section className='mt-10'>
+        <div className='flex items-center justify-between'>
+          <label
+            className='block text-gray-300 font-bold mb-1 w-3/4'
+            htmlFor='inline-full-name'
+          >
+            Temperature Setpoint Pin
+            <small className='block font-light'>
+              Set the GPIO pin number to be used for temperature setpoint
+            </small>
+          </label>
+          <div className='w-1/4'>
+            <Input
+              value={iotData?.temperature_setpoint_gpio_output_pin}
+              className='w-full'
+              component='select'
+              rightSection={<IconChevronDown size={14} stroke={1.5} />}
+              onChange={(event: any) =>
+                actionHandler({
+                  client_id: iotData?.client_id,
+                  type: 'update',
+                  action: {
+                    temperature_setpoint_gpio_output_pin: parseInt(
+                      event.currentTarget.value
+                    ),
+                  },
+                })
+              }
+            >
+              {new Array(200).fill('').map((_, idx: number) => {
+                return (
+                  <option key={idx} value={idx}>
+                    {idx}
+                  </option>
+                );
+              })}
+            </Input>
+          </div>
         </div>
       </section>
       <div className='pb-3 pt-10 flex items-center justify-center uppercase'>

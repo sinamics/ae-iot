@@ -21,7 +21,9 @@ export function AutoScrollList(props: Props) {
 
   return (
     <section {...props}>
-      <div key={'child'}>{props.children}</div>
+      <div style={{ whiteSpace: 'pre-wrap' }} key={'child'}>
+        {props.children}
+      </div>
       <div key={'dummy'} ref={bottomRef} />
     </section>
   );

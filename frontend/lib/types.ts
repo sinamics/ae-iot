@@ -12,6 +12,10 @@ export interface IDevice {
   system: string;
   uptime: string;
   debug: boolean;
+  temperature_setpoint: number;
+  electric_gpio_output_pin: number;
+  fuel_gpio_output_pin: number;
+  temperature_setpoint_gpio_output_pin: number;
 }
 
 export interface IUsers {
