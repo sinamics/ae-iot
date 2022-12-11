@@ -16,6 +16,7 @@
     "@emotion/server": "^11.10.0",
     "@hookform/resolvers": "^2.9.10",
     "@mantine/core": "^5.8.2",
+    "@mantine/form": "^5.9.3",
     "@mantine/hooks": "^5.8.2",
     "@mantine/next": "^5.8.2",
     "@next-auth/prisma-adapter": "^1.0.5",

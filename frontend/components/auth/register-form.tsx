@@ -51,7 +51,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
     //   type: 'success',
     // });
   }
-  console.log(errors);
+
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
