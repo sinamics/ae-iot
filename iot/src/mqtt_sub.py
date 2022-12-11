@@ -47,8 +47,8 @@ class MqttSubscribe(mqtt.Client):
             # update values in main class   
             if HeatCtl.update_redis_config_values(msg.payload.decode("utf-8")):
                 # send updated values back to broker 
-                # os.system('python3 /ae-iot/iot/src/cron.py')
-                os.system('python3 ./cron.py')
+                os.system('python3 /ae-iot/iot/src/cron.py')
+                # os.system('python3 ./cron.py')
             
             else:
                 print("Error: could not set updated values in redis!")
