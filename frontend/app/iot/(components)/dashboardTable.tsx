@@ -59,7 +59,7 @@ const columns = [
     header: () => <span>Electric Start Time</span>,
     // footer: (info) => info.column.id,
   }),
-  columnHelper.accessor('fuel_price', {
+  columnHelper.accessor('fuel_kwh_price', {
     header: () => 'Fuel Price',
     cell: (info) => info.renderValue(),
     // footer: (info) => info.column.id,

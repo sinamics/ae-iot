@@ -156,7 +156,7 @@ export default function DeviceById({ params }: any) {
           >
             Fuel Price
           </label>
-          <label>{iotData?.fuel_price}</label>
+          <label>{iotData?.fuel_kwh_price}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
