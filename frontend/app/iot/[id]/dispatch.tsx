@@ -28,7 +28,7 @@ export default function DeviceAction({
   iotDataProps: IDevice;
 }) {
   const [defaultValue, setDefaultValue] = useState({
-    fuel_price: Number(0),
+    fuel_kwh_price: Number(0),
     temperature_setpoint: Number(0),
     electric_gpio_output_pin: Number(0),
     fuel_gpio_output_pin: Number(0),
@@ -130,10 +130,10 @@ export default function DeviceAction({
             <SliderSetpoint
               min={10}
               max={800}
-              defaultValue={iotData?.fuel_price}
-              onChange={(e: number) => sliderHandler('fuel_price', e)}
+              defaultValue={iotData?.fuel_kwh_price}
+              onChange={(e: number) => sliderHandler('fuel_kwh_price', e)}
             />
-            {iotData?.fuel_price !== defaultValue?.fuel_price ? (
+            {iotData?.fuel_kwh_price !== defaultValue?.fuel_kwh_price ? (
               <button
                 type='button'
                 onClick={() =>
@@ -141,7 +141,7 @@ export default function DeviceAction({
                     client_id: iotData?.client_id,
                     type: 'update',
                     action: {
-                      fuel_price: defaultValue?.fuel_price,
+                      fuel_kwh_price: defaultValue?.fuel_kwh_price,
                     },
                   })
                 }

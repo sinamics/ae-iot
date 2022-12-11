@@ -4,7 +4,7 @@ export interface IDevice {
   electric_price: number;
   electric_time_to_start: string;
   friendly_name: string;
-  fuel_price: number;
+  fuel_kwh_price: number;
   fuel_time_to_start: string;
   heater: string;
   client_id: string;
