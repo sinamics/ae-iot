@@ -25,20 +25,20 @@ const postData: any = async (client_id: string) => {
 };
 
 export default function DeviceById({ params }: any) {
-  const [tableData, setTableData] = useState<any>();
+  const [iotData, setIotData] = useState<any>();
   const { status: userLoading } = useSession({ required: true });
 
   const socket = useSocket('/api/socketio');
 
-  const { isLoading, error, status } = useQuery({
-    queryKey: ['devices'],
-    queryFn: async () => {
-      const data = await postData(params.id);
-      setTableData(data);
-      return data;
-    },
-    networkMode: 'offlineFirst',
-  });
+  const {
+    isLoading: loadingDevices,
+    error,
+    data,
+  } = useQuery(['device', params.id], () => postData(params.id));
+
+  useEffect(() => {
+    setIotData(data);
+  }, [data]);
 
   useEffect(() => {
     socket?.on(`${params.id}/status`, (devices: any) => {
@@ -48,7 +48,7 @@ export default function DeviceById({ params }: any) {
         return;
       }
 
-      setTableData((prev: any) => ({ ...prev, ...msg }));
+      setIotData((prev: any) => ({ ...prev, ...msg }));
     });
 
     return () => {
@@ -57,10 +57,10 @@ export default function DeviceById({ params }: any) {
     };
   }, [socket, params.id]);
 
-  if (userLoading === 'loading' || isLoading) {
+  if (userLoading === 'loading' || loadingDevices) {
     return (
-      <div className='flex justify-center text-2xl text-gray-400'>
-        Loading...
+      <div className='flex justify-center text-2xl text-gray-400 pt-20'>
+        Loading IoT data...
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function DeviceById({ params }: any) {
     <div className='grid grid-cols-1 md:grid-cols-3 md:grid-rows-6 grid-rows-3 overflow-auto h-screen'>
       <div className='col-start-2 grid-flow-row'>
         <div className='text-center text-4xl pt-12 grid-flow-col pb-20'>
-          {tableData?.friendly_name}
+          {iotData?.friendly_name}
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -80,7 +80,7 @@ export default function DeviceById({ params }: any) {
           >
             Name
           </label>
-          <label>{tableData?.friendly_name}</label>
+          <label>{iotData?.friendly_name}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -89,7 +89,7 @@ export default function DeviceById({ params }: any) {
           >
             Client ID
           </label>
-          <label>{tableData?.client_id}</label>
+          <label>{iotData?.client_id}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -99,7 +99,7 @@ export default function DeviceById({ params }: any) {
             Lastseen
           </label>
           <label>
-            <TimeAgo date={new Date(tableData?.datetime || 0)} />
+            <TimeAgo date={new Date(iotData?.datetime || 0)} />
           </label>
         </div>
         <div className='flex items-center justify-between'>
@@ -109,7 +109,7 @@ export default function DeviceById({ params }: any) {
           >
             Uptime
           </label>
-          <label>{tableData?.uptime}</label>
+          <label>{iotData?.uptime}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -118,7 +118,7 @@ export default function DeviceById({ params }: any) {
           >
             Heater
           </label>
-          <label>{tableData?.heater}</label>
+          <label>{iotData?.heater}</label>
         </div>
         <div className='flex items-center justify-between '>
           <label
@@ -127,7 +127,7 @@ export default function DeviceById({ params }: any) {
           >
             Operational Mode
           </label>
-          <label>{tableData?.operational_mode}</label>
+          <label>{iotData?.operational_mode}</label>
         </div>
         <div className='flex items-center justify-between '>
           <label
@@ -136,7 +136,7 @@ export default function DeviceById({ params }: any) {
           >
             Electric Price
           </label>
-          <label>{tableData?.electric_price}</label>
+          <label>{iotData?.electric_price}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -145,7 +145,7 @@ export default function DeviceById({ params }: any) {
           >
             Electric Scheduled
           </label>
-          <label>{tableData?.electric_time_to_start}</label>
+          <label>{iotData?.electric_time_to_start}</label>
         </div>
         <div className='flex items-center justify-between '>
           <label
@@ -154,7 +154,7 @@ export default function DeviceById({ params }: any) {
           >
             Fuel Price
           </label>
-          <label>{tableData?.fuel_price}</label>
+          <label>{iotData?.fuel_price}</label>
         </div>
         <div className='flex items-center justify-between'>
           <label
@@ -163,7 +163,7 @@ export default function DeviceById({ params }: any) {
           >
             Fuel Scheduled
           </label>
-          <label>{tableData?.fuel_time_to_start}</label>
+          <label>{iotData?.fuel_time_to_start}</label>
         </div>
         <div className='flex items-center justify-between mb-6'>
           <label
@@ -172,9 +172,9 @@ export default function DeviceById({ params }: any) {
           >
             System
           </label>
-          <label>{tableData?.system}</label>
+          <label>{iotData?.system}</label>
         </div>
-        <DeviceAction data={tableData} />
+        <DeviceAction iotDataProps={iotData} />
       </div>
       <div className='container col-start-3 pt-14'>
         <Log params={params} />

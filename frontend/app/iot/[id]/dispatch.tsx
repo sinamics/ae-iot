@@ -1,13 +1,14 @@
 'use client';
 import { SERVER_URL } from '@/lib/config';
 import { IDevice } from '@/lib/types';
-import { useMutation } from '@tanstack/react-query';
+import { parseMutationArgs, useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { SliderSetpoint } from './(components)/slider';
 import { Icons } from '@/components/icons';
 import { Checkbox, Divider } from '@mantine/core';
 
 const postActions: any = async (props: any) => {
+  console.log(props);
   const response = await fetch(`${SERVER_URL}/api/iot/dispatch`, {
     method: 'POST',
     // cache: 'no-store',
@@ -21,13 +22,18 @@ const postActions: any = async (props: any) => {
   return response.json();
 };
 
-export default function DeviceAction({ data }: { data: IDevice }) {
-  const [checkbox, setCheckBox] = useState({ debug: false });
+export default function DeviceAction({
+  iotDataProps,
+}: {
+  iotDataProps: IDevice;
+}) {
+  const [iotData, setIotData] = useState(iotDataProps);
   const [dispatch, setDispatch] = useState({
     type: '',
     loading: true,
     error: '',
   });
+
   const mutation = useMutation<IDevice>(postActions, {
     onSuccess: () => {
       setTimeout(() => {
@@ -38,6 +44,10 @@ export default function DeviceAction({ data }: { data: IDevice }) {
       setDispatch((prev: any) => ({ ...prev, loading: false, error }));
     },
   });
+
+  useEffect(() => {
+    setIotData(iotDataProps);
+  }, [iotDataProps]);
 
   if (mutation.isError && mutation.error instanceof Error) {
     return <span>Error: {mutation.error?.message}</span>;
@@ -51,12 +61,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
     }));
     mutation.mutate({ ...iot });
   };
-  const checkboxHandler = (checked: boolean, name: string) => {
-    setCheckBox((prev: any) => ({
-      ...prev,
-      [name]: checked,
-    }));
-  };
+
   return (
     <>
       <Divider my='md' label='Settings' labelPosition='center' />
@@ -87,16 +92,25 @@ export default function DeviceAction({ data }: { data: IDevice }) {
           <label>
             {' '}
             <Checkbox
-              checked={checkbox.debug || data?.debug}
-              onChange={(event) =>
-                checkboxHandler(event.currentTarget.checked, 'debug')
+              checked={iotData?.debug}
+              onChange={(event: any) =>
+                actionHandler({
+                  client_id: iotData?.client_id,
+                  type: 'update',
+                  action: {
+                    debug: event.currentTarget.checked,
+                  },
+                })
               }
+              // onChange={(event) =>
+              //   checkboxHandler(event.currentTarget.checked, { name: 'debug', type: "update"})
+              // }
             />
           </label>
         </div>
       </section>
       <div className='pb-3 pt-10 flex items-center justify-center uppercase'>
-        <p>Operational Mode ({data?.operational_mode})</p>
+        <p>Operational Mode ({iotData?.operational_mode})</p>
       </div>
       <div className='flex items-center justify-center w-full'>
         <div
@@ -108,7 +122,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
-                client_id: data?.client_id,
+                client_id: iotData?.client_id,
                 type: 'update',
                 action: {
                   operational_mode: 'electric',
@@ -117,7 +131,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             }
             className={`w-1/3 uppercase rounded-l inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
             ${
-              data?.operational_mode === 'electric'
+              iotData?.operational_mode === 'electric'
                 ? 'border-slate-400 bg-sky-900'
                 : ''
             }`}
@@ -140,7 +154,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
-                client_id: data?.client_id,
+                client_id: iotData?.client_id,
                 type: 'update',
                 action: {
                   operational_mode: 'auto',
@@ -149,7 +163,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             }
             className={`w-1/3 uppercase inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
               ${
-                data?.operational_mode === 'auto'
+                iotData?.operational_mode === 'auto'
                   ? 'border-slate-400 bg-sky-900'
                   : ''
               }`}
@@ -172,7 +186,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
-                client_id: data?.client_id,
+                client_id: iotData?.client_id,
                 type: 'update',
                 action: {
                   operational_mode: 'stopp',
@@ -181,7 +195,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             }
             className={`w-1/3 uppercase inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
               ${
-                data?.operational_mode === 'stopp'
+                iotData?.operational_mode === 'stopp'
                   ? 'border-slate-400 bg-sky-900'
                   : ''
               }`}
@@ -203,7 +217,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             type='button'
             onClick={() =>
               actionHandler({
-                client_id: data?.client_id,
+                client_id: iotData?.client_id,
                 type: 'update',
                 action: {
                   operational_mode: 'fuel',
@@ -213,7 +227,7 @@ export default function DeviceAction({ data }: { data: IDevice }) {
             // disabled={dispatch.loading}
             className={`w-1/3 uppercase rounded-r inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
             ${
-              data?.operational_mode === 'fuel'
+              iotData?.operational_mode === 'fuel'
                 ? 'border-slate-400 bg-sky-900'
                 : ''
             }`}
