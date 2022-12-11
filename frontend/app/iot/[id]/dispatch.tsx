@@ -86,7 +86,8 @@ export default function DeviceAction({
           >
             Debug
             <small className='block font-light'>
-              Provides more verbose output in logfiles
+              Provides more verbose output in logfiles. <br />
+              Should be disabled as default to avoid growing logfiles.
             </small>
           </label>
           <label>
