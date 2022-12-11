@@ -21,7 +21,7 @@ const AddUser = () => {
   } = useForm<FormData>({
     resolver: zodResolver(userAuthSchema),
   });
-  console.log(errors);
+
   async function onSubmit(data: FormData) {
     // setIsLoading(true);
     const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
