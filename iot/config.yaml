@@ -19,4 +19,4 @@ fuel_price: 270
 electric_price: None
 uptime: None
 operational_mode: "auto"
-debug: True
+#debug: True  # Debug paramater will override the use input from controller. Only enable to set debug permanent! 

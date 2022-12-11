@@ -21,8 +21,8 @@ class HeatController(object):
         self.seed()
 
     def seed(self):
-        # with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
-        with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
+        with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
+        # with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
             config_yaml_file = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
         update_values = dict({
@@ -40,6 +40,7 @@ class HeatController(object):
         else:
             # validate stored values is correct 
             for line in config_yaml_file:
+                # override debug if value exsist in config.yaml 
                 if line == "debug":
                     self.debug = config_yaml_file[line]
                     if config_yaml_file[line] != redis_config[line]:
@@ -102,17 +103,29 @@ class HeatController(object):
             json.loads(obj)
         except:
             print("invalid object received!, main ->  update_redis_config_values")
-            return
+            return False
         
         config = self.redis_config_values()
+        incomming_config = json.loads(obj)
 
         if type(config) is not dict:
-            return print("invalid object type received!, could not update redis")
+            print("invalid object type received from redis!, could not update redis")
+            return False
             
-        config.update(json.loads(obj))
-        # pprint(json.dumps(config))
-        self.r.set("iot/config", json.dumps(config, indent=4, sort_keys=True, default=str))
+        
+        if "action" not in incomming_config:
+            print("invalid object type received!, could not update redis")
+            return False
+            
+        print(incomming_config)
+        config.update(incomming_config["action"])
+        try:
+            self.r.set("iot/config", json.dumps(config, indent=4, sort_keys=True, default=str))
+            # self.r.delete("iot/config")
+        except:
+            return False
 
+        return True
 
     def fetch_prices(self, *args):
         # fetching prices

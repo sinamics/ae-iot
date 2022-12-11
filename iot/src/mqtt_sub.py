@@ -41,14 +41,18 @@ class MqttSubscribe(mqtt.Client):
 
         
         if recevied_message["type"] == "update":
-            print("got update request from broker")
-  
+            if HeatCtl.debug:
+                print("got update request from broker with action:: {}".format(msg.payload.decode("utf-8")))
+
             # update values in main class   
-            HeatCtl.update_redis_config_values(msg.payload.decode("utf-8"))
+            if HeatCtl.update_redis_config_values(msg.payload.decode("utf-8")):
+                # send updated values back to broker 
+                # os.system('python3 /ae-iot/iot/src/cron.py')
+                os.system('python3 ./cron.py')
             
-            # send updated values back to broker 
-            os.system('python3 /ae-iot/iot/src/cron.py')
-            # os.system('python3 ./cron.py')
+            else:
+                print("Error: could not set updated values in redis!")
+                
             return 
 
         elif recevied_message["type"] == "logs":
