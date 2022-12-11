@@ -24,7 +24,8 @@ class MqttPublish():
         self.client.on_connect = self.on_connect
 
     def on_connect(self, mqttc, obj, flags, rc):
-        print("mqtt connected with return code: "+str(rc))
+        if HeatCtl.debug:
+            print("mqtt connected with return code: "+str(rc))
 
     def publish_status(self, msg):
         self.client.loop_start()
@@ -54,7 +55,6 @@ class MqttPublish():
             "data":str(aeiot_logs)}), 
             qos=2)
 
-        print("done")
         infot.wait_for_publish()
 
         self.client.loop_stop()
