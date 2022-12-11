@@ -42,12 +42,13 @@ class MqttSubscribe(mqtt.Client):
         
         if recevied_message["type"] == "update":
             print("got update request from broker")
-            
-            # update values in main class 
+  
+            # update values in main class   
             HeatCtl.update_redis_config_values(msg.payload.decode("utf-8"))
             
             # send updated values back to broker 
-            os.system('python3 /ae-iot/iot/src/cron.py')
+            # os.system('python3 /ae-iot/iot/src/cron.py')
+            os.system('python3 ./cron.py')
             return 
 
         elif recevied_message["type"] == "logs":

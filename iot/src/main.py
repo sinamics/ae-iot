@@ -14,7 +14,6 @@ utc_tz = pytz.utc
 class HeatController(object):
     def __init__(self, *args, **kwargs):
         self.hostname = socket.gethostname()
-        self.redis_config = dict()
         self.debug = False
         self.r = r
 
@@ -22,8 +21,8 @@ class HeatController(object):
         self.seed()
 
     def seed(self):
-        # with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
-        with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
+        with open(os.path.expanduser('../config.yaml'), "r") as yamlfile:
+        # with open(os.path.expanduser('/ae-iot/iot/config.yaml'), "r") as yamlfile:
             config_yaml_file = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
         update_values = dict({
@@ -37,7 +36,7 @@ class HeatController(object):
         redis_config = self.redis_config_values()
 
         if not redis_config:
-            r.set("iot/config", json.dumps(config_yaml_file, indent=4, sort_keys=True, default=str))
+            self.r.set("iot/config", json.dumps(config_yaml_file, indent=4, sort_keys=True, default=str))
         else:
             # validate stored values is correct 
             for line in config_yaml_file:
@@ -45,15 +44,15 @@ class HeatController(object):
                     self.debug = config_yaml_file[line]
                     if config_yaml_file[line] != redis_config[line]:
                         redis_config[line] = config_yaml_file[line]
-                        r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
+                        self.r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
 
                 if line not in redis_config:
                     print("{} does not exsist in redis, lets add it".format(line))
                     redis_config[line] = config_yaml_file[line]
-                    r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
+                    self.r.set("iot/config", json.dumps(redis_config, indent=4, sort_keys=True, default=str))
                  
         # r.delete("{}/config".format(self.redis_config_values()["client_id"]))    
-        self.redis_config.update(config_yaml_file)
+        # self.redis_config.update(config_yaml_file)
 
 
 
@@ -106,8 +105,13 @@ class HeatController(object):
             return
         
         config = self.redis_config_values()
-        config.update(obj)
-        r.set("iot/config", json.dumps(config, indent=4, sort_keys=True, default=str))
+
+        if type(config) is not dict:
+            return print("invalid object type received!, could not update redis")
+            
+        config.update(json.loads(obj))
+        # pprint(json.dumps(config))
+        self.r.set("iot/config", json.dumps(config, indent=4, sort_keys=True, default=str))
 
 
     def fetch_prices(self, *args):

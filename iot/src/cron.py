@@ -84,20 +84,20 @@ pub_message = dict({
 })
 
 # update config with what stored in redis
-HeatCtl.redis_config.update(pub_message)
+config.update(pub_message)
 
 # sys.exit()
-if HeatCtl.redis_config["operational_mode"] == "stopp":
-    HeatCtl.redis_config["heater"] = "stopped"
-    HeatCtl.redis_config["electric_time_to_start"] = "stopped"
-    HeatCtl.redis_config["fuel_time_to_start"] = "stopped"
+if config["operational_mode"] == "stopp":
+    config["heater"] = "stopped"
+    config["electric_time_to_start"] = "stopped"
+    config["fuel_time_to_start"] = "stopped"
 
     GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
     GPIO.output(config["fuel_gpio_output_pin"], GPIO.LOW)
 
-    publish_message(HeatCtl.redis_config)
+    publish_message(config)
 
-if (spot_kwh_price < HeatCtl.redis_config["fuel_kwh_price"] and HeatCtl.redis_config["operational_mode"] == "auto") or HeatCtl.redis_config["operational_mode"] == "electric":
+if (spot_kwh_price < config["fuel_kwh_price"] and config["operational_mode"] == "auto") or config["operational_mode"] == "electric":
     if config["debug"]:
         print("Prioritizes electric heating")
     # trigger rpi pin
@@ -106,18 +106,18 @@ if (spot_kwh_price < HeatCtl.redis_config["fuel_kwh_price"] and HeatCtl.redis_co
     # get status
     #print(GPIO.input(config["electric_gpio_output_pin"]))
     
-    HeatCtl.redis_config["heater"] = "electric"
-    publish_message(HeatCtl.redis_config)
+    config["heater"] = "electric"
+    publish_message(config)
 
-if (spot_kwh_price >= HeatCtl.redis_config["fuel_kwh_price"] and HeatCtl.redis_config["operational_mode"] == "auto") or HeatCtl.redis_config["operational_mode"] == "fuel":
+if (spot_kwh_price >= config["fuel_kwh_price"] and config["operational_mode"] == "auto") or config["operational_mode"] == "fuel":
     if config["debug"]:
         print("Prioritizes fuel heating")
     # trigger rpi pin
     GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
     GPIO.output(config["fuel_gpio_output_pin"], GPIO.HIGH)
 
-    HeatCtl.redis_config["heater"] = "fuel"
-    publish_message(HeatCtl.redis_config)
+    config["heater"] = "fuel"
+    publish_message(config)
 
 
 
