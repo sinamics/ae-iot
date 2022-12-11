@@ -181,19 +181,19 @@ class HeatController(object):
                 end_pricetime = datetime.strptime(r["end"], '%Y-%m-%d %H:%M:%S%z').replace(tzinfo=utc_tz)
                 
                 el_price = float(r["value"]) / 10 * 1.25
-                fuel_price = self.redis_config_values()["fuel_price"]
+                fuel_kwh_price = self.redis_config_values()["fuel_kwh_price"]
 
-                if not fuel_price:
+                if not fuel_kwh_price:
                     return print("Invalid fuel price")
                 now = datetime.utcnow().replace(tzinfo=utc_tz)
                 if end_pricetime >= now :
-                    if el_price >= fuel_price:
+                    if el_price >= fuel_kwh_price:
                         if fuel_time_set:
                             continue
                         fuel_time_to_start = start_pricetime
                         fuel_time_set = True
 
-                    if el_price < fuel_price:
+                    if el_price < fuel_kwh_price:
                         if el_time_set:
                             continue
                         electric_time_to_start = start_pricetime

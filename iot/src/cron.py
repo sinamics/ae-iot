@@ -79,8 +79,7 @@ pub_message = dict({
     "fuel_time_to_start": date_formatter(forcast["fuel_time_to_start"]),
     "electric_price": spot_kwh_price,
     "uptime": str(timedelta(seconds=time.time() - psutil.boot_time())).split(".")[0],
-    "datetime": timenow,
-    "fuel_kwh_price": spot_kwh_price
+    "datetime": timenow
 })
 
 # update config with what stored in redis
@@ -91,10 +90,8 @@ if config["operational_mode"] == "stopp":
     config["heater"] = "stopped"
     config["electric_time_to_start"] = "stopped"
     config["fuel_time_to_start"] = "stopped"
-
-    GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
-    GPIO.output(config["fuel_gpio_output_pin"], GPIO.LOW)
-
+    
+    GPIO.cleanup()
     publish_message(config)
 
 if (spot_kwh_price < config["fuel_kwh_price"] and config["operational_mode"] == "auto") or config["operational_mode"] == "electric":
