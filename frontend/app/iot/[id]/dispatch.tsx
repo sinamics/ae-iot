@@ -111,6 +111,7 @@ export default function DeviceAction({ data }: any) {
             onClick={() =>
               actionHandler({
                 client_id: data?.client_id,
+                type: 'update',
                 action: {
                   operational_mode: 'auto',
                 },
@@ -138,9 +139,42 @@ export default function DeviceAction({ data }: any) {
           </button>
           <button
             type='button'
+            // disabled={dispatch.loading}
             onClick={() =>
               actionHandler({
                 client_id: data?.client_id,
+                type: 'update',
+                action: {
+                  operational_mode: 'stopp',
+                },
+              })
+            }
+            className={`w-1/3 uppercase inline-block px-6 py-2.5 border border-gray-400 bg-transparent text-center text-sm  font-medium text-slate-300 hover:border-slate-200 hover:bg-slate-600 focus:z-10 focus:outline-none transition duration-150 ease-in-out
+              ${
+                data?.operational_mode === 'stopp'
+                  ? 'border-slate-400 bg-sky-900'
+                  : ''
+              }`}
+          >
+            <div className='flex items-center justify-center'>
+              {dispatch.type === 'stopp' && dispatch.loading && (
+                <Icons.spinner
+                  className={`mr-2 h-4 w-4 animate-spin  ${
+                    dispatch.type === 'stopp' && dispatch.loading
+                      ? 'visible'
+                      : 'invisible'
+                  }`}
+                />
+              )}
+              Stopp
+            </div>
+          </button>
+          <button
+            type='button'
+            onClick={() =>
+              actionHandler({
+                client_id: data?.client_id,
+                type: 'update',
                 action: {
                   operational_mode: 'fuel',
                 },
