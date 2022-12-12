@@ -6,12 +6,19 @@ import RedisConnect from '@/lib/redis';
 const redis = RedisConnect();
 
 const devicesInDatabase = async () => {
-  const redisResult: any = new Set<IDevice[]>();
-  const all = await redis.scan('0', 'MATCH', 'iot*');
-  for (let x = 0; x < all[1].length; x++) {
-    redisResult.add(JSON.parse(await redis.get(all[1][x])));
+  const redisResult: Set<IDevice> = new Set();
+  try {
+    const all = await redis.scan('0', 'MATCH', 'iot*');
+    for (let x = 0; x < all[1].length; x++) {
+      const device = JSON.parse((await redis.get(all[1][x])) as string);
+      if (device) {
+        redisResult.add(device);
+      }
+    }
+  } catch (error) {
+    // Handle the error
   }
-  return [...redisResult];
+  return Array.from(redisResult);
 };
 
 const Dashboard = async () => {
