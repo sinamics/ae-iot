@@ -5,8 +5,10 @@ import { io, Socket } from 'socket.io-client';
 export const useSocket = (url: string) => {
   const [socket, setSocket] = useState<Socket>();
 
-  useEffect(() => {
+  useEffect((): any => {
+    // fetch api endpoint to start socket io server
     fetch(url).finally(() => {
+      // server_url is defined in the config
       const socketio = io(`${SERVER_URL}`, {
         path: url,
         transports: ['websocket'],
@@ -19,10 +21,7 @@ export const useSocket = (url: string) => {
       });
       setSocket(socketio);
     });
-    function cleanup() {
-      socket?.disconnect();
-    }
-    return cleanup;
+    return () => socket?.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
