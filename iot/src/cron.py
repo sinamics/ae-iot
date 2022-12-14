@@ -90,7 +90,9 @@ if config["operational_mode"] == "stopp":
     config["heater"] = "stopped"
     config["electric_time_to_start"] = "stopped"
     config["fuel_time_to_start"] = "stopped"
-    
+
+    GPIO.output(config["fuel_gpio_output_pin"], GPIO.LOW)
+    GPIO.output(config["electric_gpio_output_pin"], GPIO.LOW)
     GPIO.cleanup()
     publish_message(config)
 
