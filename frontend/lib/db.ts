@@ -1,10 +1,14 @@
-// export const db = prisma;
 import { PrismaClient } from '@prisma/client';
 
-let prisma: PrismaClient | undefined;
+const globalAny: any = global;
+
+let prisma: PrismaClient | undefined | any;
 const getPrismaClient = () => {
-  if (!prisma) {
+  if (!prisma && !globalAny.prisma) {
     prisma = new PrismaClient();
+    globalAny.prisma = prisma;
+  } else {
+    prisma = globalAny.prisma;
   }
   return prisma;
 };
