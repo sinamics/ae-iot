@@ -1,22 +1,20 @@
-import { useEffect, useRef } from 'react';
-import React from 'react';
+import { useEffect, useRef, ReactNode } from 'react';
 
-export interface Props {
-  children: Array<any> | any;
+interface Props {
+  children: ReactNode;
 }
 
 export function AutoScrollList(props: Props) {
-  const bottomRef: any = useRef();
-
-  const scrollToBottom = () => {
-    bottomRef.current.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
-  };
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
+    const { current } = bottomRef;
+    if (current) {
+      current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
   }, [props.children]);
 
   return (

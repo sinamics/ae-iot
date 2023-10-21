@@ -12,21 +12,21 @@ const clientId = `mqtt_nextjs`;
 
 const connectUrl = `mqtt://${host}:${port}`;
 
-var caFile = fs.readFileSync(path.join(process.cwd(), 'certs/ca.crt'));
-var certFile = fs.readFileSync(path.join(process.cwd(), 'certs/client.crt'));
-var keyFile = fs.readFileSync(path.join(process.cwd(), 'certs/client.key'));
+const caFile = fs.readFileSync(path.join(process.cwd(), 'certs/ca.crt'));
+const certFile = fs.readFileSync(path.join(process.cwd(), 'certs/client.crt'));
+const keyFile = fs.readFileSync(path.join(process.cwd(), 'certs/client.key'));
 
 const topics = ['iot-rpios-100', 'iot-rpios-101'];
 
 class Mqtt {
-  mqtt: any;
-  mqtt_client: any;
-  io?: Socket;
-  connected: boolean;
+  private mqtt: typeof mqtt;
+  private mqtt_client: mqtt.MqttClient;
+  private io?: Socket;
+  private connected: boolean;
   constructor(io?: Socket) {
     this.mqtt = mqtt;
     this.io = io;
-    this.mqtt_client = null;
+    this.mqtt_client = null as any;
     this.connected = false;
     this.connect();
   }
@@ -50,46 +50,74 @@ class Mqtt {
     this.store_messages();
   }
   store_messages() {
-    this.mqtt_client.on('message', function (topic: any, message: any) {
-      const msg = JSON.parse(message.toString('utf8'));
-      if (!('client_id' in msg)) return console.log('invalid mqtt message!');
+    this.mqtt_client.on('message', (topic: string, message: Buffer) => {
+      try {
+        // Validate the message and throw an error if it is not a Buffer
+        if (!(message instanceof Buffer)) {
+          throw new Error(
+            `Invalid MQTT message: expected Buffer, received ${typeof message}`
+          );
+        }
 
-      const action = topic.split('/').pop();
+        const msg = JSON.parse(message.toString('utf8'));
 
-      switch (action) {
-        case 'status':
-          console.log('Storing status message in DB');
-          redis.set(msg['client_id'], JSON.stringify(msg));
-          break;
+        // Validate the message and throw an error if it is invalid
+        if (!('client_id' in msg)) {
+          throw new Error('Invalid MQTT status message');
+        }
 
-        default:
-          break;
+        const action = topic.split('/').pop();
+
+        switch (action) {
+          case 'status':
+            console.log('Storing status message in DB');
+            redis.set(msg['client_id'], JSON.stringify(msg));
+            break;
+
+          default:
+            break;
+        }
+      } catch (error) {
+        // Handle any errors that occurred during message processing
+        console.error(error);
       }
-
-      console.log(action);
     });
   }
   message() {
-    this.mqtt_client.on('message', (topic: any, message: any) => {
-      const msg = JSON.parse(message.toString('utf8'));
-      if (!('client_id' in msg))
-        return console.log('invalid mqtt status message!');
-      console.log('Received message on topic: ' + topic);
+    this.mqtt_client.on('message', (topic: string, message: Buffer) => {
+      try {
+        const msg = JSON.parse(message.toString('utf8'));
 
-      const action = topic.split('/').pop();
-      if (!action) return console.log('Invalid topic');
-      switch (action) {
-        case 'status':
-          this.io?.emit('iot_broadcasting', JSON.stringify(msg));
-          this.io?.emit(`${msg['client_id']}/status`, JSON.stringify(msg));
-          break;
+        // Validate the message and throw an error if it is invalid
+        if (!('client_id' in msg)) {
+          throw new Error('Invalid MQTT status message');
+        }
 
-        case 'logs':
-          console.log('Log message received!');
-          this.io?.emit(`${msg['client_id']}/logs`, JSON.stringify(msg));
-          break;
-        default:
-          break;
+        console.log('Received message on topic: ' + topic);
+
+        const action = topic.split('/').pop();
+
+        // Validate the topic and throw an error if it is invalid
+        if (!action) {
+          throw new Error('Invalid topic');
+        }
+
+        switch (action) {
+          case 'status':
+            this.io?.emit('iot_broadcasting', JSON.stringify(msg));
+            this.io?.emit(`${msg['client_id']}/status`, JSON.stringify(msg));
+            break;
+
+          case 'logs':
+            console.log('Log message received!');
+            this.io?.emit(`${msg['client_id']}/logs`, JSON.stringify(msg));
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        // Handle any errors that occurred during message processing
+        console.error(error);
       }
     });
   }
@@ -135,5 +163,4 @@ class Mqtt {
   }
 }
 
-// const newMqtt = new Mqtt();
 export default Mqtt;

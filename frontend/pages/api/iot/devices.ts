@@ -20,32 +20,27 @@ export default async function handler(
   }
 
   switch (req.method) {
-    case 'GET':
-      const redisResult = new Set();
-      const all = await redis.scan('0', 'MATCH', 'iot*');
-      for (let x = 0; x < all[1].length; x++) {
-        redisResult.add(await redis.get(all[1][x]));
+    case 'POST':
+      const query = req.body as { client_id: string };
+
+      // Validate the query and throw an error if it is invalid
+      if (!query.hasOwnProperty('client_id')) {
+        throw new Error('client id not provided');
       }
 
-      res.status(200).json(Array.from(redisResult));
-      break;
+      try {
+        // Get the value from Redis
+        const value = (await redis.get(query.client_id)) as string;
 
-    case 'POST':
-      const query = req.body;
+        // Parse the value from JSON
+        const jsonValue = JSON.parse(value);
 
-      if (!query.hasOwnProperty('client_id'))
-        return res.status(400).json({ status: 'client id not provided' });
-
-      res.status(200).json(JSON.parse(await redis.get(query.client_id)));
-
-      break;
-
-    case 'PUT':
-      const value = req.body;
-      if ('client_id'! in value || 'value'! in value)
-        return res.status(400).json({ status: 'client id not provided' });
-
-      await redis.put(query.client_id, query.value);
+        res.status(200).json(jsonValue);
+      } catch (error) {
+        // Handle any errors that may occur while getting the value from Redis
+        console.error('Redis Error:', error);
+        res.status(500).json({ status: 'Internal Server Error' });
+      }
 
       break;
     default:
