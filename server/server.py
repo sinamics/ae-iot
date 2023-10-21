@@ -73,7 +73,7 @@ class Server():
 
         # Route for seeing a data
         @app.route('/deviceById')
-        def devices():
+        def deviceById():
             device = request.get_json()
             node = self.r.get(device)          
             try:
@@ -100,13 +100,16 @@ class Server():
 
         # if app.debug:
         CORS(app)
-
-        self.mq = self.mqtt(socketio, app.debug, self.r)
-        self.mq.run()
-        # http_server = WSGIServer(('',5000), application, handler_class=WebSocketHandler)
-        # http_server.serve_forever()
-        eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
-        # socketio.run(app, host="0.0.0.0", port="5001" )
+        try:
+            self.mq = self.mqtt(socketio, app.debug, self.r)
+            self.mq.run()
+            # http_server = WSGIServer(('',5000), application, handler_class=WebSocketHandler)
+            # http_server.serve_forever()
+            eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
+            # socketio.run(app, host="0.0.0.0", port="5001" )
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt has been caught.")
+            self.mq.client.disconnect()
 
 if __name__ == '__main__':
     s = Server(Mqtt, debug=False)

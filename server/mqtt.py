@@ -44,7 +44,11 @@ class Mqtt():
         client.reconnect_delay_set(min_delay=1, max_delay=120)
         client.tls_set(ca_certs=cafile, certfile=certfile, keyfile=keyfile, cert_reqs=True)
         # client.on_connect = on_connect
-        client.connect(broker, port, keepalive=60)
+        try:
+            client.connect(broker, port, keepalive=60)
+        except Exception as e:
+            print("Error connecting to MQTT Broker: {}".format(e))
+
         return client
 
     def publish(self, topic, msg):
